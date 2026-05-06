@@ -126,15 +126,17 @@
       <img id="preview-img" alt="プレビュー">
     </div>
 
-    <div class="section">
-      <label id="input-label">料理名・場所</label>
-      <input type="text" id="main-input" placeholder="" maxlength="80">
+    <div id="main-input-section">
+      <div class="section">
+        <label id="input-label">料理名・場所</label>
+        <input type="text" id="main-input" placeholder="" maxlength="80">
+      </div>
+      <div class="section">
+        <label>一言メモ（任意）</label>
+        <textarea id="memo" placeholder="補足があれば"></textarea>
+      </div>
     </div>
-
-    <div class="section">
-      <label>一言メモ（任意）</label>
-      <textarea id="memo" placeholder="補足があれば"></textarea>
-    </div>
+    <div id="custom-input-section" style="display:none;"></div>
 
     <div class="section">
       <label>トーン</label>
@@ -211,28 +213,131 @@ const ACCOUNTS = [
 
 このアカウントの人物について：
 - 千葉在住の経営者・プロデューサー（50代男性）
-- グルメ・ワイン好きで、仕事仲間や旧友との食事が多い
+- 主な活動エリアは千葉・裏千葉エリア
+- 仕事仲間やエストの常連さん（女性も多い）との食事が多い
+- グルメ・ワイン好きだが食レポはしない。「場の空気」と「人との時間」を切り取る
 - 飾らない日常語で情景が浮かぶ文章を書く
-- 食・酒の話に人との時間が自然に滲み出る
-- オチや余韻がある（「寒っと言いながら退散したような気がする...」）
-- 自分語りでなく「場の空気」を切り取るのが上手い
+- オチや余韻がある（「気づいたらボトル空いてた〜」「寒っと言いながら退散したような気がする...」）
+- 自分語りでなく「この人と飲みたい・食べたい」と思わせる投稿が持ち味
+- ワインはボトルで頼むことが多い。最初の一杯はスパークリング・白ワイン・ビール・ハイボールなど気分次第
+- 「ふらっと」「気軽に」という表現は使わない。ちゃんと目的を持って行く人
 - ハッシュタグは最小限、主張しすぎない
 
 実際の投稿例：
 「千葉駅を降りるとシトシト雨／傘もないし、ちょっと雨宿りついでに走ってお店へ／今日のワインは花とミツバチ🐝 エチケットの可愛らしさより、しっかり目でスッキリ。／あとからお知り合いの社長さんが来られて、即席誕生日お祝い会？／そして雨もパラパラとなった頃に「寒っ」と言いながら退散したような気がする...」
+
+絶対にやってはいけないこと：
+- 「ふらっと」「気軽に」などの表現を使う
+- グラスワインを頼んだ設定にする（ボトルが基本）
+- 食レポ・料理説明に終始する
+- 絵文字を多用する
 
 キャプションのルール：
 - 100〜180文字程度
 - 改行を使ってリズムを作る
 - ハッシュタグは最後に3〜5個程度、控えめに
 - 日本語のみ
-- 絵文字は1〜2個まで、使いすぎない`,
+- 絵文字は0〜2個まで`,
     tonePrompts: {
       'いつも通り': 'いつもの自然体で。場の空気と食・酒を軽やかに絡めて。',
       'しみじみ系': '人との時間や思い出がじんわり滲み出るトーンで。',
       'さらっと短め': '80〜100文字くらいで、一言二言でさらっと。',
       '場の空気重視': '食より「誰と・どんな夜だったか」を中心に描写。'
     }
+  },
+  {
+    id: 'aschronos',
+    name: 'asChronos Inc.',
+    sub: 'アズクロノス株式会社',
+    avatar: 'AC',
+    color: '#2c5f8a',
+    instaUrl: 'https://www.instagram.com/aschronos_inc/',
+    inputLabel: '投稿内容・実績・テーマ',
+    inputPlaceholder: '例：飲食店向けInstagramキャプション生成ツールを制作',
+    tones: ['制作実績', 'ツール・サービス紹介', 'くにさんの独り言', 'お知らせ'],
+    systemPrompt: `あなたはアズクロノス株式会社（asChronos Inc.）のInstagramアカウント @aschronos_inc のキャプションを書く専門家です。
+
+会社について：
+- 「時間をつくる会社」がコンセプト
+- 提案書・LP・動画制作・マーケティング支援を行う5人チーム
+- 代表はプロデューサー気質の経営者（Kuni）
+- クライアントは不動産・建設・医療・士業など
+- 制作物のクオリティと「伝わる構成」にこだわる
+
+発信の3本柱：
+1. 制作実績：提案書・LP・動画・ツールなどの仕事の裏側
+2. ツール・サービス紹介：クライアントの課題を解決するソリューション
+3. くにさんの独り言：代表の仕事観・プロデューサー目線のコラム
+
+トーンの特徴：
+- 堅すぎず、軽すぎず。仕事ができる大人の言葉
+- 「制作しました」より「こんな課題を解決しました」という視点
+- 数字や具体的なエピソードを交えるとリアリティが出る
+- Kuniさんの個性（ユーモア・鋭さ・人情味）がにじむ
+
+キャプションのルール：
+- 120〜200文字程度
+- 改行を使ってリズムを作る
+- ハッシュタグは最後に4〜6個。必ず「#アズクロノス」「#提案書制作」を含める
+- 日本語のみ
+- 絵文字は1〜2個まで`,
+    tonePrompts: {
+      '制作実績': '仕事の裏側・こだわり・解決した課題を中心に。「作りました」より「こんな変化が生まれました」という視点で。',
+      'ツール・サービス紹介': 'どんな課題を解決するか、使うとどう楽になるかを具体的に。押しつけがましくなく、さらっと。',
+      'くにさんの独り言': 'Kuniさんの仕事観・気づき・日常の一コマ。鋭いけど親しみやすく。プロデューサー目線で。',
+      'お知らせ': 'シンプルで明快に。でも無味乾燥にならず、人の温度感を残して。'
+    }
+  },
+  {
+    id: 'aki',
+    name: 'aki さん専用',
+    sub: '甲山 晶 / 釣り・グルメ・ライフスタイル',
+    avatar: '🎣',
+    color: '#1a6b5a',
+    instaUrl: 'https://www.instagram.com/shin.joungsook77/',
+    inputLabel: '投稿カテゴリを選んでください',
+    inputPlaceholder: '',
+    tones: ['日本語', '韓国語', '日本語＋韓国語'],
+    systemPrompt: `あなたは甲山晶（shin.joungsook77）さんのInstagramキャプションを書く専門家です。
+
+akiさんについて：
+- 韓国出身、日本在住（千葉エリア）の女性（48歳）
+- 韓国の釣り番組に出演経験があるほどの釣りのプロ
+- 海釣り・船釣りが中心。季節の魚（天然トラフグ・太刀魚・イカ・タコ・金目鯛・モロコなど）を追いかける
+- 大物釣りが得意。45キロのモロコを釣り上げるほどのパワフルさ
+- 料理の腕前も抜群。釣った魚をエストプロッシモで調理してもらうこともある
+- 愛犬チョコ（トイプードル）＆ラテとの生活も投稿の大切な一部
+- 韓国と日本を行き来するライフスタイル。韓国帰省時の投稿もある
+- 温かく明るい人柄、パーティー好き、モエ・エ・シャンドンが似合う女性
+
+実際の投稿スタイル：
+- 釣果はシンプルに一言で決める（「モロコ45キロ❤️」など）
+- 韓国語と日本語を自然にミックス
+- 愛犬投稿はゆるく短く（「今日はチョコをカットする日^^*」）
+- 絵文字は❤️💕🎣🐟などを好んで使う
+- 長々と説明しない。余白を大切にする
+
+キャプションのルール：
+- 全カテゴリ共通：80〜150文字程度。短すぎず、でも読み疲れない長さ
+- 釣果：魚の大きさ・引き・気持ちをちゃんと描写。プロの目線と喜びが伝わるように
+- 愛犬：チョコ＆ラテの様子をほっこりエピソードで
+- 料理：食材の良さ・調理・食べた感動を丁寧に
+- 韓国関連：日韓の生活が交差する郷愁と温かさを交えて
+- 絵文字は2〜3個、要所に使う
+- 日本語の場合：ハッシュタグ4〜6個（#釣り #船釣り #五エム丸 など）
+- 韓国語の場合：ハッシュタグを韓国語で（#낚시 #선상낚시 #인생은즐겁게 など）
+- 両言語の場合：日本語→韓国語の順で`,
+    tonePrompts: {
+      '日本語': '日本語のみでキャプションを作成。自然体で親しみやすく。',
+      '韓国語': '韓国語のみでキャプションを作成。自然体で親しみやすく。',
+      '日本語＋韓国語': '日本語キャプションの後に改行を入れて、同じ内容を韓国語でも書く。'
+    },
+    customInputs: [
+      { id: 'category', label: '投稿カテゴリ', type: 'select', options: ['釣果報告', '料理・食事', '愛犬', '韓国・帰省', 'その他'] },
+      { id: 'fish', label: '魚の名前（釣果の時）', type: 'text', placeholder: '例：天然トラフグ、太刀魚、金目鯛' },
+      { id: 'spot', label: '釣り場・場所', type: 'text', placeholder: '例：千葉沖、相模湾、東京湾' },
+      { id: 'memo', label: '一言メモ', type: 'textarea', placeholder: '例：大物が釣れた！天気最高、仲間と一緒に など' }
+    ]
   }
 ];
 
@@ -266,10 +371,31 @@ function selectAccount(id) {
   document.getElementById('tool-avatar').textContent = currentAccount.avatar;
   document.getElementById('tool-name').textContent = currentAccount.name;
   document.getElementById('tool-sub').textContent = currentAccount.sub;
-  document.getElementById('input-label').textContent = currentAccount.inputLabel;
-  document.getElementById('main-input').placeholder = currentAccount.inputPlaceholder;
   document.getElementById('insta-link').href = currentAccount.instaUrl;
   document.querySelector('.insta-btn').style.background = currentAccount.color;
+
+  // カスタム入力フォーム or 標準フォーム
+  const mainInputSection = document.getElementById('main-input-section');
+  const customInputSection = document.getElementById('custom-input-section');
+
+  if (currentAccount.customInputs) {
+    mainInputSection.style.display = 'none';
+    customInputSection.style.display = 'block';
+    customInputSection.innerHTML = currentAccount.customInputs.map(inp => {
+      if (inp.type === 'select') {
+        return `<div class="section"><label>${inp.label}</label><select id="custom-${inp.id}" style="width:100%;padding:11px 13px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:15px;font-family:inherit;outline:none;">${inp.options.map(o => `<option>${o}</option>`).join('')}</select></div>`;
+      } else if (inp.type === 'textarea') {
+        return `<div class="section"><label>${inp.label}</label><textarea id="custom-${inp.id}" placeholder="${inp.placeholder}" style="width:100%;padding:11px 13px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:15px;font-family:inherit;resize:none;height:76px;"></textarea></div>`;
+      } else {
+        return `<div class="section"><label>${inp.label}</label><input type="text" id="custom-${inp.id}" placeholder="${inp.placeholder}" style="width:100%;padding:11px 13px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:15px;font-family:inherit;"></div>`;
+      }
+    }).join('');
+  } else {
+    mainInputSection.style.display = 'block';
+    customInputSection.style.display = 'none';
+    document.getElementById('input-label').textContent = currentAccount.inputLabel;
+    document.getElementById('main-input').placeholder = currentAccount.inputPlaceholder;
+  }
 
   // トーンボタン描画
   const toneGrid = document.getElementById('tone-grid');
@@ -282,8 +408,8 @@ function selectAccount(id) {
   photoBase64 = null;
   document.getElementById('preview-img').style.display = 'none';
   document.getElementById('upload-text').textContent = 'タップして写真を選択';
-  document.getElementById('main-input').value = '';
-  document.getElementById('memo').value = '';
+  if (document.getElementById('main-input')) document.getElementById('main-input').value = '';
+  if (document.getElementById('memo')) document.getElementById('memo').value = '';
   document.getElementById('result-area').style.display = 'none';
   document.getElementById('error-msg').textContent = '';
 
@@ -319,10 +445,20 @@ function selectTone(btn, tone) {
 }
 
 async function generateCaption() {
-  const mainInput = document.getElementById('main-input').value.trim();
-  const memo = document.getElementById('memo').value.trim();
   const errEl = document.getElementById('error-msg');
   errEl.textContent = '';
+
+  let mainInput = '';
+  if (currentAccount.customInputs) {
+    const parts = currentAccount.customInputs.map(inp => {
+      const el = document.getElementById('custom-' + inp.id);
+      return el && el.value.trim() ? inp.label + '：' + el.value.trim() : '';
+    }).filter(Boolean);
+    mainInput = parts.join('\n');
+  } else {
+    mainInput = document.getElementById('main-input').value.trim();
+  }
+  const memo = document.getElementById('memo') ? document.getElementById('memo').value.trim() : '';
 
   if (!mainInput) { errEl.textContent = '内容を入力してください'; return; }
 
@@ -354,7 +490,7 @@ async function generateCaption() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-opus-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userContent }]
@@ -368,8 +504,9 @@ async function generateCaption() {
 
     const data = await res.json();
     const text = data.content.map(b => b.text || '').join('');
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+    const jsonMatch = text.match(/\{[\s\S]*"captions"[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('生成失敗。再度お試しください。');
+    const parsed = JSON.parse(jsonMatch[0]);
     variations = parsed.captions || [];
     showVariation(0);
     document.getElementById('result-area').style.display = 'block';
@@ -399,7 +536,17 @@ function copyCaption() {
   });
 }
 
-renderAccountList();
+// URLパラメーターで直接アカウントを開く
+const urlParams = new URLSearchParams(window.location.search);
+const urlUser = urlParams.get('user');
+if (urlUser && ACCOUNTS.find(a => a.id === urlUser)) {
+  // 直接アカウント画面へ
+  document.getElementById('select-screen').style.display = 'none';
+  selectAccount(urlUser);
+} else {
+  // ポータル画面を表示
+  renderAccountList();
+}
 </script>
 </body>
 </html>
