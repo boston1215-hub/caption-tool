@@ -557,12 +557,143 @@ function copyCaption() {
 // URLパラメーターで直接アカウントを開く
 const urlParams = new URLSearchParams(window.location.search);
 const urlUser = urlParams.get('user');
-if (urlUser && ACCOUNTS.find(a => a.id === urlUser)) {
-  // 直接アカウント画面へ
+const urlSetup = urlParams.get('setup');
+
+// ?id=パラメーターでKVから設定を取得
+const urlId = urlParams.get('id');
+
+if (urlId) {
+  (async () => {
+    try {
+      const res = await fetch(`https://caption-proxy.boston1215.workers.dev/get-config?id=${urlId}`);
+      const config = await res.json();
+      if (config.error) { renderAccountList(); return; }
+
+      const langPrompt = {
+        'ja': '日本語のみでキャプションを作成。',
+        'en': '英語のみでキャプションを作成。',
+        'ko': '韓국語のみでキャプションを作成。',
+        'ja_en': '日本語キャプションの後に英語キャプションも追加。',
+        'ja_ko': '日本語キャプションの後に韓国語キャプションも追加。',
+        'ja_en_ko': '日本語→英語→韓国語の順でキャプションを作成。'
+      };
+
+      const toneList = Array.isArray(config.tones) ? config.tones : [config.t || 'カジュアル'];
+
+      const dynamicAccount = {
+        id: 'custom',
+        name: config.n || 'カスタム',
+        sub: config.i || '',
+        avatar: (config.n || 'C').charAt(0).toUpperCase(),
+        color: '#850025',
+        instaUrl: config.ig || 'https://www.instagram.com/',
+        inputLabel: '料理名・物件名・投稿内容など',
+        inputPlaceholder: '例：本日のおすすめ料理・新着物件情報',
+        tones: toneList,
+        systemPrompt: `あなたは「${config.n}」のInstagramキャプションを書く専門家です。
+
+アカウント情報：
+- 名前：${config.n}
+- 業種：${config.i}
+${config.w ? '- Webサイト：' + config.w : ''}
+${config.c ? '- キャッチコピー：' + config.c : ''}
+${config.f ? '- 特徴・こだわり：' + config.f : ''}
+${config.cat && config.cat.length > 0 ? '- よく投稿するカテゴリ：' + config.cat.join('、') : ''}
+${config.note ? '- 特記事項：' + config.note : ''}
+
+${langPrompt[config.l] || '日本語のみでキャプションを作成。'}
+
+キャプションのルール：
+- 150〜200文字程度
+- ハッシュタグは最後にまとめて5〜7個
+${config.h ? '- 必須ハッシュタグ：' + config.h : ''}`,
+        tonePrompts: {
+          'カジュアル・親しみやすく': '親しみやすくフレンドリーなトーンで。絵文字を2〜3個使い、軽やかに。',
+          '上品・丁寧に': '上品で丁寧なトーンで。絵文字は控えめに1〜2個。',
+          '食欲・購買欲をそそる表現で': '食欲や購買意欲をそそる表現をたっぷり使って。絵文字3〜4個。',
+          'ストーリー・背景を大切にして': '背景やストーリーを交えて。詩的でリズムのある文体で。',
+          'プロフェッショナルで信頼感のある': '信頼感・専門性を前面に。実績や数字を交えて。',
+          'さらっとシンプルに短く': '80〜100文字程度でさらっと。余白を大切に。'
+        }
+      };
+
+      ACCOUNTS.push(dynamicAccount);
+      document.getElementById('select-screen').style.display = 'none';
+      selectAccount('custom');
+    } catch(e) {
+      renderAccountList();
+    }
+  })();
+} else if (urlSetup) {
+  // セットアップデータから動的アカウントを生成
+  try {
+    const config = JSON.parse(decodeURIComponent(atob(urlSetup)));
+    const langMap = {
+      'ja': '日本語のみ',
+      'en': '英語のみ',
+      'ko': '韓国語のみ',
+      'ja_en': '日本語＋英語',
+      'ja_ko': '日本語＋韓国語',
+      'ja_en_ko': '日英韓すべて'
+    };
+    const langPrompt = {
+      'ja': '日本語のみでキャプションを作成。',
+      'en': '英語のみでキャプションを作成。',
+      'ko': '韓국語のみでキャプションを作成。',
+      'ja_en': '日本語キャプションの後に英語キャプションも追加。',
+      'ja_ko': '日本語キャプションの後に韓国語キャプションも追加。',
+      'ja_en_ko': '日本語→英語→韓国語の順でキャプションを作成。'
+    };
+
+    const dynamicAccount = {
+      id: 'custom',
+      name: config.n || 'カスタム',
+      sub: config.i || '',
+      avatar: (config.n || 'C').charAt(0).toUpperCase(),
+      color: '#850025',
+      instaUrl: config.ig || 'https://www.instagram.com/',
+      inputLabel: '料理名・物件名・投稿内容など',
+      inputPlaceholder: '例：本日のおすすめ料理・新着物件情報',
+      tones: ['カジュアル', '上品・丁寧', '食欲・購買欲そそる', 'ストーリー風', 'プロフェッショナル', 'シンプル・短め'],
+      systemPrompt: `あなたは「${config.n}」のInstagramキャプションを書く専門家です。
+
+アカウント情報：
+- 名前：${config.n}
+- 業種：${config.i}
+${config.w ? '- Webサイト：' + config.w : ''}
+${config.c ? '- キャッチコピー：' + config.c : ''}
+${config.f ? '- 特徴・こだわり：' + config.f : ''}
+${config.cat && config.cat.length > 0 ? '- よく投稿するカテゴリ：' + config.cat.join('、') : ''}
+${config.note ? '- 特記事項：' + config.note : ''}
+
+${langPrompt[config.l] || '日本語のみでキャプションを作成。'}
+トーン：${config.t}
+
+キャプションのルール：
+- 150〜200文字程度
+- ハッシュタグは最後にまとめて5〜7個
+${config.h ? '- 必須ハッシュタグ：' + config.h : ''}
+- 日本語ベースで作成`,
+      tonePrompts: {
+        'カジュアル': '親しみやすくフレンドリーなトーンで。絵文字を2〜3個使い、軽やかに。',
+        '上品・丁寧': '上品で丁寧なトーンで。絵文字は控えめに1〜2個。',
+        '食欲・購買欲そそる': '食欲や購買意欲をそそる表現をたっぷり使って。具体的に描写。絵文字3〜4個。',
+        'ストーリー風': '背景やストーリーを交えて。詩的でリズムのある文体で。',
+        'プロフェッショナル': '信頼感・専門性を前面に。実績や数字を交えて。絵文字は最小限。',
+        'シンプル・短め': '80〜100文字程度でさらっと。余白を大切に。'
+      }
+    };
+
+    ACCOUNTS.push(dynamicAccount);
+    document.getElementById('select-screen').style.display = 'none';
+    selectAccount('custom');
+  } catch(e) {
+    renderAccountList();
+  }
+} else if (urlUser && ACCOUNTS.find(a => a.id === urlUser)) {
   document.getElementById('select-screen').style.display = 'none';
   selectAccount(urlUser);
 } else {
-  // ポータル画面を表示
   renderAccountList();
 }
 </script>
