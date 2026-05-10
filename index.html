@@ -128,12 +128,16 @@
 
     <div id="main-input-section">
       <div class="section">
-        <label id="input-label">料理名・場所</label>
-        <input type="text" id="main-input" placeholder="" maxlength="80">
+        <label id="input-label">お店名・場所</label>
+        <input type="text" id="main-input" placeholder="例：行徳・バリバリジョニー" maxlength="80">
+      </div>
+      <div class="section">
+        <label id="sub-label">メニュー・料理名・商品名</label>
+        <input type="text" id="sub-input" placeholder="例：高宮鶏の中華そば" maxlength="80">
       </div>
       <div class="section">
         <label>一言メモ（任意）</label>
-        <textarea id="memo" placeholder="補足があれば"></textarea>
+        <textarea id="memo" placeholder="例：車のバッテリー上がり対策でドライブ"></textarea>
       </div>
     </div>
     <div id="custom-input-section" style="display:none;"></div>
@@ -483,11 +487,13 @@ async function generateCaption() {
     }).filter(Boolean);
     mainInput = parts.join('\n');
   } else {
-    mainInput = document.getElementById('main-input').value.trim();
+    const shopVal = document.getElementById('main-input').value.trim();
+    const menuVal = document.getElementById('sub-input') ? document.getElementById('sub-input').value.trim() : '';
+    mainInput = [shopVal ? 'お店・場所：' + shopVal : '', menuVal ? 'メニュー・料理名：' + menuVal : ''].filter(Boolean).join('\n');
   }
   const memo = document.getElementById('memo') ? document.getElementById('memo').value.trim() : '';
 
-  if (!mainInput) { errEl.textContent = '内容を入力してください'; return; }
+  if (!mainInput) { errEl.textContent = 'お店名またはメニューを入力してください'; return; }
 
   const btn = document.getElementById('gen-btn');
   btn.disabled = true;
