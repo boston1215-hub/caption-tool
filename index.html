@@ -143,8 +143,18 @@
     <div id="custom-input-section" style="display:none;"></div>
 
     <div class="section">
-      <label>トーン</label>
+      <label>カテゴリ</label>
       <div class="tone-grid" id="tone-grid"></div>
+    </div>
+
+    <div class="section">
+      <label>テイスト</label>
+      <div class="tone-grid" id="style-grid">
+        <button class="tone-btn active" onclick="selectStyle(this,'カジュアル')">カジュアル</button>
+        <button class="tone-btn" onclick="selectStyle(this,'丁寧')">丁寧</button>
+        <button class="tone-btn" onclick="selectStyle(this,'ビジネス')">ビジネス</button>
+        <button class="tone-btn" onclick="selectStyle(this,'事実のみ')">事実のみ</button>
+      </div>
     </div>
 
     <button class="gen-btn" id="gen-btn" onclick="generateCaption()">キャプションを生成する</button>
@@ -374,6 +384,7 @@ akiさんについて：
 
 let currentAccount = null;
 let selectedTone = '';
+let selectedStyle = 'カジュアル';
 let photoBase64 = null;
 let photoMediaType = 'image/jpeg';
 let variations = [];
@@ -443,6 +454,8 @@ function selectAccount(id) {
   if (document.getElementById('memo')) document.getElementById('memo').value = '';
   document.getElementById('result-area').style.display = 'none';
   document.getElementById('error-msg').textContent = '';
+  selectedStyle = 'カジュアル';
+  document.querySelectorAll('#style-grid .tone-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
 
   // 画面切り替え
   document.getElementById('select-screen').style.display = 'none';
@@ -467,6 +480,12 @@ function handlePhoto(input) {
     document.getElementById('upload-text').textContent = '写真を変更する';
   };
   reader.readAsDataURL(file);
+}
+
+function selectStyle(btn, style) {
+  document.querySelectorAll('#style-grid .tone-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedStyle = style;
 }
 
 function selectTone(btn, tone) {
@@ -501,9 +520,17 @@ async function generateCaption() {
   document.getElementById('result-area').style.display = 'none';
 
   const tonePrompt = currentAccount.tonePrompts[selectedTone] || '';
+  const stylePrompts = {
+    'カジュアル': '話し言葉・親しみやすいトーンで。',
+    '丁寧': '丁寧語で上品に。',
+    'ビジネス': 'ビジネスライクで簡潔に。プロフェッショナルな印象で。',
+    '事実のみ': '感想・形容詞は極力省いて事実だけを書く。シンプル・ドライに。'
+  };
+  const stylePrompt = stylePrompts[selectedStyle] || '';
   const systemPrompt = `${currentAccount.systemPrompt}
 
-トーン指示：${tonePrompt}
+カテゴリ指示：${tonePrompt}
+テイスト指示：${stylePrompt}
 
 3パターンのキャプションを生成してください。
 必ずこの形式でJSONのみ返してください（マークダウン不要）：
@@ -515,7 +542,7 @@ async function generateCaption() {
   }
   userContent.push({
     type: 'text',
-    text: `内容：${mainInput}${memo ? '\n補足：' + memo : ''}\nトーン：${selectedTone}`
+    text: `内容：${mainInput}${memo ? '\n補足：' + memo : ''}\nカテゴリ：${selectedTone}\nテイスト：${selectedStyle}`
   });
 
   try {
