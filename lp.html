@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS投稿、もう悩まない。| asChronos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --burgundy: #850025;
+  --wine: #C00000;
+  --dark: #0f0a0b;
+  --white: #FFFFFF;
+  --cream: #FAF7F5;
+  --gray: #888;
+  --light-red: #fff0f0;
+  --border: #e8e0de;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--white);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ===== ヒーロー ===== */
+.hero {
+  min-height: 100vh;
+  background: var(--dark);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 6vw;
+  overflow: hidden;
+}
+
+/* 背景装飾 */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(133,0,37,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-line {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--burgundy);
+}
+
+.hero-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4rem;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--wine);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--wine);
+}
+
+.hero-sub {
+  font-size: clamp(14px, 2vw, 18px);
+  color: rgba(255,255,255,0.55);
+  font-weight: 300;
+  line-height: 1.8;
+  max-width: 480px;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--burgundy);
+  color: var(--white);
+  padding: 16px 32px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: all 0.3s;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+.hero-cta:hover { background: var(--wine); transform: translateX(4px); }
+.hero-cta::after { content: '→'; }
+
+.hero-free-badge {
+  display: inline-block;
+  margin-left: 1rem;
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  animation: fadeUp 0.8s 0.5s ease both;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 6vw;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}
+.hero-scroll::before {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--burgundy);
+}
+
+/* ===== 課題セクション ===== */
+.problem {
+  padding: 8rem 6vw;
+  background: var(--cream);
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--burgundy);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 3rem;
+  color: var(--dark);
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5px;
+  background: var(--border);
+}
+
+.problem-item {
+  background: var(--cream);
+  padding: 2.5rem 2rem;
+  position: relative;
+}
+
+.problem-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 300;
+  color: rgba(133,0,37,0.12);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.problem-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #444;
+}
+
+/* ===== ソリューション ===== */
+.solution {
+  padding: 8rem 6vw;
+  background: var(--white);
+}
+
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 4rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.flow-step {
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
+  position: relative;
+}
+
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 35px;
+  right: -1px;
+  width: 2px;
+  height: 30px;
+  background: var(--burgundy);
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.flow-icon {
+  width: 70px; height: 70px;
+  background: var(--dark);
+  border-radius: 0;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 24px;
+}
+
+.flow-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.flow-sub {
+  font-size: 11px;
+  color: var(--gray);
+  line-height: 1.5;
+}
+
+.flow-arrow {
+  font-size: 20px;
+  color: var(--burgundy);
+  padding: 0 1rem;
+  margin-top: -30px;
+}
+
+/* ===== 特徴 ===== */
+.features {
+  padding: 8rem 6vw;
+  background: var(--dark);
+}
+
+.features .section-label { color: var(--wine); }
+.features .section-title { color: var(--white); }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-top: 4rem;
+}
+
+.feature-item {
+  background: var(--dark);
+  padding: 2.5rem 2rem;
+  border-top: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+.feature-item:hover { border-top-color: var(--burgundy); }
+
+.feature-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  color: var(--wine);
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.feature-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.feature-body {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ===== 対応業種 ===== */
+.industries {
+  padding: 8rem 6vw;
+  background: var(--cream);
+}
+
+.industry-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 3rem;
+}
+
+.industry-tag {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  font-size: 13px;
+  color: var(--dark);
+  font-weight: 400;
+  transition: all 0.2s;
+}
+.industry-tag:hover { background: var(--burgundy); color: var(--white); border-color: var(--burgundy); }
+.industry-tag.highlight { background: var(--burgundy); color: var(--white); border-color: var(--burgundy); }
+
+/* ===== 料金 ===== */
+.pricing {
+  padding: 8rem 6vw;
+  background: var(--white);
+}
+
+.pricing-card {
+  max-width: 540px;
+  border: 1px solid var(--border);
+  padding: 3rem;
+  position: relative;
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: var(--burgundy);
+}
+
+.pricing-badge {
+  display: inline-block;
+  background: var(--burgundy);
+  color: var(--white);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 4px 12px;
+  margin-bottom: 1.5rem;
+}
+
+.pricing-amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 56px;
+  font-weight: 300;
+  color: var(--dark);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.pricing-amount span { font-size: 20px; }
+
+.pricing-note {
+  font-size: 12px;
+  color: var(--gray);
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.pricing-list { list-style: none; margin-bottom: 2rem; }
+.pricing-list li {
+  padding: 10px 0;
+  font-size: 14px;
+  color: #444;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pricing-list li::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--burgundy);
+  flex-shrink: 0;
+}
+
+.pricing-cta {
+  display: block;
+  text-align: center;
+  background: var(--burgundy);
+  color: var(--white);
+  padding: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  letter-spacing: 0.05em;
+  transition: background 0.2s;
+}
+.pricing-cta:hover { background: var(--wine); }
+
+.pricing-sub {
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 1rem;
+}
+
+/* ===== CTA ===== */
+.cta-section {
+  padding: 8rem 6vw;
+  background: var(--burgundy);
+  text-align: center;
+}
+
+.cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.cta-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  color: var(--burgundy);
+  padding: 18px 40px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: all 0.3s;
+}
+.cta-btn:hover { background: var(--dark); color: var(--white); }
+.cta-btn::after { content: '→'; }
+
+/* ===== フッター ===== */
+footer {
+  padding: 2rem 6vw;
+  background: var(--dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+}
+
+.footer-copy {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ===== アニメーション ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 600px) {
+  .hero { padding: 6rem 5vw 4rem; }
+  .problem, .solution, .features, .industries, .pricing, .cta-section { padding: 5rem 5vw; }
+  .flow { flex-direction: column; align-items: flex-start; }
+  .flow-step { display: flex; align-items: center; gap: 1rem; text-align: left; min-width: unset; width: 100%; }
+  .flow-step:not(:last-child)::after { display: none; }
+  .flow-icon { flex-shrink: 0; width: 50px; height: 50px; font-size: 18px; }
+  .flow-arrow { display: none; }
+  .pricing-card { padding: 2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ヒーロー -->
+<section class="hero">
+  <div class="hero-line"></div>
+  <div class="hero-logo">asChronos Inc.</div>
+  <div class="hero-eyebrow">AI-Powered SNS Tool</div>
+  <h1 class="hero-title">
+    SNS投稿、<br>
+    もう<em>悩まない。</em>
+  </h1>
+  <p class="hero-sub">
+    料理名を入れるだけで、プロ品質のInstagramキャプションが自動生成。飲食店・クリニック・不動産会社など、あらゆる業種に対応。
+  </p>
+  <div>
+    <a href="https://boston1215-hub.github.io/caption-tool/setup.html" class="hero-cta">無料で試してみる</a>
+    <span class="hero-free-badge">先着30件 完全無料</span>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- 課題 -->
+<section class="problem">
+  <div class="section-label reveal">こんなお悩みありませんか？</div>
+  <h2 class="section-title reveal">SNS担当者が<br>毎回抱える<br>3つの壁</h2>
+  <div class="problem-grid">
+    <div class="problem-item reveal">
+      <div class="problem-num">01</div>
+      <div class="problem-text">投稿するたびに文章を考える時間がかかる。気づけば後回しになってしまう。</div>
+    </div>
+    <div class="problem-item reveal">
+      <div class="problem-num">02</div>
+      <div class="problem-text">ハッシュタグは何を付ければいいか毎回迷う。センスのある言葉が出てこない。</div>
+    </div>
+    <div class="problem-item reveal">
+      <div class="problem-num">03</div>
+      <div class="problem-text">写真は撮ったのに投稿できないまま溜まっていく。SNSが更新できていない。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ソリューション -->
+<section class="solution">
+  <div class="section-label reveal">解決策</div>
+  <h2 class="section-title reveal">たった3ステップで<br>投稿完了</h2>
+
+  <div class="flow">
+    <div class="flow-step reveal">
+      <div class="flow-icon">📷</div>
+      <div class="flow-label">写真を選ぶ</div>
+      <div class="flow-sub">スマホから<br>そのままアップ</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step reveal">
+      <div class="flow-icon">✍</div>
+      <div class="flow-label">名前を入力</div>
+      <div class="flow-sub">料理名・物件名<br>など一言でOK</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step reveal">
+      <div class="flow-icon">⚡</div>
+      <div class="flow-label">生成ボタン</div>
+      <div class="flow-sub">3パターンが<br>即座に完成</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step reveal">
+      <div class="flow-icon">📱</div>
+      <div class="flow-label">コピーして投稿</div>
+      <div class="flow-sub">ハッシュタグも<br>自動で付く</div>
+    </div>
+  </div>
+</section>
+
+<!-- 特徴 -->
+<section class="features">
+  <div class="section-label reveal">Features</div>
+  <h2 class="section-title reveal">このツールが<br>選ばれる理由</h2>
+
+  <div class="features-grid">
+    <div class="feature-item reveal">
+      <div class="feature-num">01</div>
+      <div class="feature-title">お店のトーンに<br>完全カスタマイズ</div>
+      <div class="feature-body">カジュアル・上品・食欲そそるなど複数のトーンから選択。お店のキャラクターに合った文体で生成します。</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-num">02</div>
+      <div class="feature-title">写真を見て<br>文章を作る</div>
+      <div class="feature-body">料理写真をアップすると、見た目・色・雰囲気まで読み取って、より魅力的なキャプションを生成します。</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-num">03</div>
+      <div class="feature-title">日本語・英語・<br>韓国語に対応</div>
+      <div class="feature-body">インバウンド対応や海外向け発信も同時に。1回の操作で複数言語のキャプションが完成します。</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-num">04</div>
+      <div class="feature-title">URLを開くだけ<br>アプリ不要</div>
+      <div class="feature-body">インストール不要。スマホでもPCでも、URLを開くだけですぐ使えます。ITが苦手な方でも安心。</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-num">05</div>
+      <div class="feature-title">Webサイトから<br>自動セットアップ</div>
+      <div class="feature-body">お店のURLを入れるだけで、コンセプト・ハッシュタグ・トーンを自動で設定。初期設定は最短3分。</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-num">06</div>
+      <div class="feature-title">継続的な<br>チューンナップ</div>
+      <div class="feature-body">使いながら「もっとこうしたい」が出てきたら、専任スタッフがプロンプトを調整。常に最適な状態を維持します。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 対応業種 -->
+<section class="industries">
+  <div class="section-label reveal">対応業種</div>
+  <h2 class="section-title reveal">あらゆる業種の<br>SNS発信を支援</h2>
+  <div class="industry-list">
+    <span class="industry-tag highlight reveal">飲食店・カフェ・バー</span>
+    <span class="industry-tag reveal">クリニック・歯科・医療</span>
+    <span class="industry-tag reveal">不動産・建設</span>
+    <span class="industry-tag reveal">士業（法律・税務）</span>
+    <span class="industry-tag reveal">美容・サロン・ネイル</span>
+    <span class="industry-tag reveal">釣り・アウトドア</span>
+    <span class="industry-tag reveal">スポーツジム・フィットネス</span>
+    <span class="industry-tag reveal">小売・ショップ</span>
+    <span class="industry-tag reveal">ライフスタイル・個人</span>
+    <span class="industry-tag reveal">その他、ご相談ください</span>
+  </div>
+</section>
+
+<!-- 料金 -->
+<section class="pricing">
+  <div class="section-label reveal">Pricing</div>
+  <h2 class="section-title reveal">まず使ってみてください。<br>費用は後から。</h2>
+
+  <div class="pricing-card reveal">
+    <div class="pricing-badge">先着30件限定</div>
+    <div class="pricing-amount"><span>¥</span>0</div>
+    <div class="pricing-note">初期費用・月額費用ともに完全無料でスタート</div>
+    <ul class="pricing-list">
+      <li>お店専用ツールの作成・設定</li>
+      <li>キャプション生成（回数無制限）</li>
+      <li>写真認識対応</li>
+      <li>ハッシュタグ自動生成</li>
+      <li>チューンナップ対応</li>
+      <li>30件以降は月額3,000円〜</li>
+    </ul>
+    <a href="https://boston1215-hub.github.io/caption-tool/setup.html" class="pricing-cta">無料でセットアップする</a>
+    <div class="pricing-sub">クレジットカード不要・アプリのインストール不要</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title reveal">今日から、SNSが<br>楽になる。</h2>
+  <p class="cta-sub reveal">3分でセットアップ完了。あとはURLを開くだけ。</p>
+  <a href="https://boston1215-hub.github.io/caption-tool/setup.html" class="cta-btn reveal">無料で始める</a>
+</section>
+
+<!-- フッター -->
+<footer>
+  <div class="footer-logo">asChronos</div>
+  <div class="footer-copy">© 2026 アズクロノス株式会社. All rights reserved.</div>
+</footer>
+
+<script>
+// スクロールアニメーション
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

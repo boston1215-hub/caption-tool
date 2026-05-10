@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設定管理 | asChronos</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+  .header {
+    background: #850025; padding: 1rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header h1 { font-size: 16px; font-weight: 600; color: #fff; }
+  .header span { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+  .card {
+    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
+    padding: 1.5rem; margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 14px; font-weight: 600; color: #850025;
+    margin-bottom: 1rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f0e8e8;
+  }
+
+  .field { margin-bottom: 1rem; }
+  label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
+  input[type="text"], textarea, select {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid #ddd; border-radius: 6px;
+    background: #fff; color: #1a1a1a;
+    font-size: 14px; font-family: inherit; outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: #850025; }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+  .search-row { display: flex; gap: 8px; }
+  .search-row input { flex: 1; }
+
+  .btn {
+    padding: 10px 20px; border: none; border-radius: 6px;
+    font-size: 14px; font-family: inherit; font-weight: 500;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { background: #850025; color: #fff; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-secondary { background: #f5f5f5; color: #555; border: 1px solid #ddd; }
+  .btn-full { width: 100%; padding: 13px; font-size: 15px; }
+
+  .status { font-size: 12px; margin-top: 8px; min-height: 18px; }
+  .status.success { color: #2c7a4b; }
+  .status.error { color: #c00; }
+
+  .result-url {
+    background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px;
+    padding: 10px 12px; font-size: 12px; color: #850025;
+    font-family: monospace; word-break: break-all; margin-top: 10px;
+  }
+
+  .copy-btn {
+    margin-top: 8px; width: 100%; padding: 10px;
+    background: #f5f5f5; color: #555; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+
+  .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .tag {
+    padding: 6px 12px; border: 1px solid #ddd; border-radius: 99px;
+    font-size: 12px; cursor: pointer; transition: all 0.15s; background: #fff;
+  }
+  .tag.active { border-color: #850025; background: #fff0f0; color: #850025; font-weight: 500; }
+
+  .section-sep { height: 1px; background: #f0e8e8; margin: 1rem 0; }
+
+  .info-box {
+    background: #fff8f0; border: 1px solid #f0d080; border-radius: 6px;
+    padding: 12px; font-size: 12px; color: #8a6800; margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚙️ キャプションツール 設定管理</h1>
+  <span>asChronos 管理用</span>
+</div>
+
+<div class="container">
+
+  <div class="info-box">
+    💡 このページはasChronosスタッフ専用の管理画面です。お客様のツール設定を作成・編集できます。
+  </div>
+
+  <!-- ID検索 -->
+  <div class="card">
+    <div class="card-title">既存の設定を編集する</div>
+    <div class="field">
+      <label>設定ID（URLの ?id= 以降の文字列）</label>
+      <div class="search-row">
+        <input type="text" id="search-id" placeholder="例：abc123">
+        <button class="btn btn-primary" onclick="loadConfig()">読み込む</button>
+      </div>
+      <div class="status" id="search-status"></div>
+    </div>
+  </div>
+
+  <!-- 設定フォーム -->
+  <div class="card">
+    <div class="card-title">設定内容</div>
+
+    <div class="field">
+      <label>お店・会社名</label>
+      <input type="text" id="name" placeholder="例：Est!prossimo">
+    </div>
+
+    <div class="field">
+      <label>業種</label>
+      <select id="industry">
+        <option value="">選択してください</option>
+        <option value="restaurant">飲食店・カフェ・バー</option>
+        <option value="clinic">クリニック・歯科・医療</option>
+        <option value="realestate">不動産・建設</option>
+        <option value="legal">士業（法律・税務）</option>
+        <option value="outdoor">釣り・アウトドア</option>
+        <option value="beauty">美容・サロン</option>
+        <option value="lifestyle">ライフスタイル・個人</option>
+        <option value="other">その他</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>WebサイトURL</label>
+      <input type="text" id="website" placeholder="https://www.example.com">
+    </div>
+
+    <div class="field">
+      <label>Instagram URL</label>
+      <input type="text" id="instagram" placeholder="https://www.instagram.com/アカウント名">
+    </div>
+
+    <div class="section-sep"></div>
+
+    <div class="field">
+      <label>キャッチコピー・売り</label>
+      <input type="text" id="catchcopy" placeholder="例：千産千消がテーマの千葉のイタリアン">
+    </div>
+
+    <div class="field">
+      <label>特徴・こだわり（プロンプトの核になる部分）</label>
+      <textarea id="features" placeholder="例：契約農家から直送の野菜、旬の魚介を使用。グラスワインは常時20種以上。食べログ百名店選出。"></textarea>
+    </div>
+
+    <div class="field">
+      <label>必須ハッシュタグ</label>
+      <input type="text" id="hashtags" placeholder="#千葉グルメ #イタリアン #エストプロッシモ">
+    </div>
+
+    <div class="field">
+      <label>投稿カテゴリ（複数選択）</label>
+      <div class="tag-grid" id="cat-grid">
+        <span class="tag" onclick="toggleTag(this)" data-val="料理・ドリンク">料理・ドリンク</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="物件・案件紹介">物件・案件紹介</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="スタッフ紹介">スタッフ紹介</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="季節のお知らせ">季節のお知らせ</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="実績・事例紹介">実績・事例紹介</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="釣果・アウトドア報告">釣果・アウトドア報告</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="日常・裏側">日常・裏側</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="イベント・お知らせ">イベント・お知らせ</span>
+      </div>
+    </div>
+
+    <div class="section-sep"></div>
+
+    <div class="field">
+      <label>トーン（複数選択可）</label>
+      <div class="tag-grid" id="tone-grid">
+        <span class="tag" onclick="toggleTag(this)" data-val="カジュアル・親しみやすく">カジュアル</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="上品・丁寧に">上品・丁寧</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="食欲・購買欲をそそる表現で">食欲・購買欲</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="ストーリー・背景を大切にして">ストーリー風</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="プロフェッショナルで信頼感のある">プロフェッショナル</span>
+        <span class="tag" onclick="toggleTag(this)" data-val="さらっとシンプルに短く">シンプル・短め</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>対応言語</label>
+      <div class="tag-grid" id="lang-grid">
+        <span class="tag active" onclick="selectLang(this)" data-val="ja">日本語</span>
+        <span class="tag" onclick="selectLang(this)" data-val="en">英語</span>
+        <span class="tag" onclick="selectLang(this)" data-val="ko">韓国語</span>
+        <span class="tag" onclick="selectLang(this)" data-val="ja_en">日本語＋英語</span>
+        <span class="tag" onclick="selectLang(this)" data-val="ja_ko">日本語＋韓国語</span>
+        <span class="tag" onclick="selectLang(this)" data-val="ja_en_ko">日英韓すべて</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>特記事項・追加指示</label>
+      <textarea id="notes" placeholder="例：ワインのペアリング提案を必ず含める、投稿の入口となる状況描写を必ず入れる など"></textarea>
+    </div>
+
+    <div class="status" id="save-status"></div>
+    <button class="btn btn-primary btn-full" id="save-btn" onclick="saveConfig()" style="margin-top:1rem">
+      保存して専用URLを発行する
+    </button>
+  </div>
+
+  <!-- 発行済みURL -->
+  <div class="card" id="url-card" style="display:none">
+    <div class="card-title">発行済みURL</div>
+    <div class="result-url" id="result-url"></div>
+    <button class="copy-btn" onclick="copyURL()">URLをコピーする</button>
+    <div style="margin-top:10px; display:flex; gap:8px;">
+      <button class="btn btn-secondary" style="flex:1" onclick="openTool()">ツールを確認する</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="newConfig()">新規作成</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PROXY = 'https://caption-proxy.boston1215.workers.dev';
+let currentId = null;
+let selectedLang = 'ja';
+
+function toggleTag(el) {
+  el.classList.toggle('active');
+}
+
+function selectLang(el) {
+  document.querySelectorAll('#lang-grid .tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  selectedLang = el.dataset.val;
+}
+
+function getSelectedTags(gridId) {
+  return Array.from(document.querySelectorAll(`#${gridId} .tag.active`)).map(t => t.dataset.val);
+}
+
+function setSelectedTags(gridId, values) {
+  document.querySelectorAll(`#${gridId} .tag`).forEach(t => {
+    t.classList.toggle('active', values.includes(t.dataset.val));
+  });
+}
+
+async function loadConfig() {
+  const id = document.getElementById('search-id').value.trim();
+  if (!id) { showStatus('search-status', 'IDを入力してください', 'error'); return; }
+
+  showStatus('search-status', '読み込み中...', '');
+  try {
+    const res = await fetch(`${PROXY}/get-config?id=${id}`);
+    const config = await res.json();
+    if (config.error) { showStatus('search-status', '設定が見つかりませんでした', 'error'); return; }
+
+    // フォームに反映
+    document.getElementById('name').value = config.n || '';
+    document.getElementById('industry').value = config.i || '';
+    document.getElementById('website').value = config.w || '';
+    document.getElementById('instagram').value = config.ig || '';
+    document.getElementById('catchcopy').value = config.c || '';
+    document.getElementById('features').value = config.f || '';
+    document.getElementById('hashtags').value = config.h || '';
+    document.getElementById('notes').value = config.note || '';
+
+    setSelectedTags('cat-grid', config.cat || []);
+    setSelectedTags('tone-grid', config.tones || []);
+
+    // 言語
+    selectedLang = config.l || 'ja';
+    document.querySelectorAll('#lang-grid .tag').forEach(t => {
+      t.classList.toggle('active', t.dataset.val === selectedLang);
+    });
+
+    currentId = id;
+    showStatus('search-status', '✓ 設定を読み込みました', 'success');
+
+    // URLを表示
+    document.getElementById('result-url').textContent = `https://boston1215-hub.github.io/caption-tool/?id=${id}`;
+    document.getElementById('url-card').style.display = 'block';
+
+  } catch(e) {
+    showStatus('search-status', 'エラー：' + e.message, 'error');
+  }
+}
+
+async function saveConfig() {
+  const config = {
+    n: document.getElementById('name').value.trim(),
+    i: document.getElementById('industry').value,
+    w: document.getElementById('website').value.trim(),
+    ig: document.getElementById('instagram').value.trim(),
+    c: document.getElementById('catchcopy').value.trim(),
+    f: document.getElementById('features').value.trim(),
+    h: document.getElementById('hashtags').value.trim(),
+    cat: getSelectedTags('cat-grid'),
+    tones: getSelectedTags('tone-grid'),
+    l: selectedLang,
+    note: document.getElementById('notes').value.trim()
+  };
+
+  if (!config.n) { showStatus('save-status', 'お店名を入力してください', 'error'); return; }
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = '保存中...';
+  showStatus('save-status', '', '');
+
+  try {
+    // 既存IDがあれば上書き、なければ新規
+    const endpoint = currentId
+      ? `${PROXY}/save-config?id=${currentId}`
+      : `${PROXY}/save-config`;
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...config, _id: currentId })
+    });
+    const data = await res.json();
+
+    if (data.id) {
+      currentId = data.id;
+      const url = `https://boston1215-hub.github.io/caption-tool/?id=${data.id}`;
+      document.getElementById('result-url').textContent = url;
+      document.getElementById('url-card').style.display = 'block';
+      showStatus('save-status', '✓ 保存しました', 'success');
+    } else {
+      showStatus('save-status', '保存に失敗しました', 'error');
+    }
+  } catch(e) {
+    showStatus('save-status', 'エラー：' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '保存して専用URLを発行する';
+}
+
+function copyURL() {
+  const url = document.getElementById('result-url').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'コピーしました！';
+    setTimeout(() => btn.textContent = 'URLをコピーする', 2000);
+  });
+}
+
+function openTool() {
+  const url = document.getElementById('result-url').textContent;
+  window.open(url, '_blank');
+}
+
+function newConfig() {
+  currentId = null;
+  document.getElementById('search-id').value = '';
+  document.getElementById('name').value = '';
+  document.getElementById('industry').value = '';
+  document.getElementById('website').value = '';
+  document.getElementById('instagram').value = '';
+  document.getElementById('catchcopy').value = '';
+  document.getElementById('features').value = '';
+  document.getElementById('hashtags').value = '';
+  document.getElementById('notes').value = '';
+  document.querySelectorAll('#cat-grid .tag, #tone-grid .tag').forEach(t => t.classList.remove('active'));
+  selectedLang = 'ja';
+  document.querySelectorAll('#lang-grid .tag').forEach((t, i) => t.classList.toggle('active', i === 0));
+  document.getElementById('url-card').style.display = 'none';
+  showStatus('search-status', '', '');
+  showStatus('save-status', '', '');
+}
+
+function showStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status' + (type ? ' ' + type : '');
+}
+</script>
+</body>
+</html>
