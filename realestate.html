@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>賃貸物件 紹介文ジェネレーター｜伊勢豊不動産</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      background: #f5f6f8;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+    .page-header {
+      background: #0f4c81;
+      color: #fff;
+      padding: 1.5rem 2rem;
+    }
+    .page-header h1 { font-size: 20px; font-weight: 600; }
+    .page-header p { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+    .badges { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e4e6ea;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: #0f4c81;
+    }
+    .field textarea { height: 80px; resize: vertical; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .section-label {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      margin: 14px 0 6px;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #666;
+      background: #fff;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tag:hover { border-color: #0f4c81; color: #0f4c81; }
+    .tag.active { background: #e8f0fb; color: #0f4c81; border-color: #7aaad6; font-weight: 500; }
+    .gen-btn {
+      width: 100%;
+      padding: 14px;
+      background: #0f4c81;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.15s;
+      font-family: inherit;
+    }
+    .gen-btn:hover { background: #0a3560; }
+    .gen-btn:disabled { background: #bbb; cursor: not-allowed; }
+    .results { margin-top: 1.5rem; }
+    .result-card {
+      background: #fff;
+      border: 1px solid #e4e6ea;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .result-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .result-label .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #0f4c81;
+    }
+    .result-label span { font-size: 13px; font-weight: 600; color: #0f4c81; }
+    .result-text {
+      font-size: 14px;
+      color: #1a1a1a;
+      line-height: 1.85;
+      white-space: pre-wrap;
+    }
+    .copy-btn {
+      margin-top: 12px;
+      font-size: 12px;
+      padding: 5px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #f8f8f8;
+      color: #666;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover { background: #fff; border-color: #0f4c81; color: #0f4c81; }
+    .loading {
+      text-align: center;
+      padding: 2.5rem;
+      color: #888;
+      font-size: 14px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid #ddd;
+      border-top-color: #0f4c81;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg {
+      background: #fff0f0;
+      border: 1px solid #ffcccc;
+      border-radius: 8px;
+      padding: 1rem;
+      color: #cc3333;
+      font-size: 14px;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .row2, .row3 { grid-template-columns: 1fr; }
+      .page-header { padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>賃貸物件 紹介文ジェネレーター</h1>
+  <p>千葉市エリア対応 ／ AI が SNS・ポータル・チラシ用を一括生成</p>
+  <div class="badges">
+    <span class="badge">Instagram / SNS用</span>
+    <span class="badge">SUUMO / ホームズ用</span>
+    <span class="badge">チラシ / 自社サイト用</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="card">
+    <div class="card-title">物件基本情報</div>
+    <div class="row2">
+      <div class="field">
+        <label>物件名</label>
+        <input type="text" id="prop-name" placeholder="例：シーサイドコート幕張">
+      </div>
+      <div class="field">
+        <label>エリア</label>
+        <select id="prop-area">
+          <option value="千葉市中央区">千葉市中央区</option>
+          <option value="千葉市花見川区">千葉市花見川区</option>
+          <option value="千葉市稲毛区">千葉市稲毛区</option>
+          <option value="千葉市若葉区">千葉市若葉区</option>
+          <option value="千葉市緑区">千葉市緑区</option>
+          <option value="千葉市美浜区">千葉市美浜区</option>
+          <option value="船橋市">船橋市</option>
+          <option value="市川市">市川市</option>
+          <option value="松戸市">松戸市</option>
+          <option value="柏市">柏市</option>
+          <option value="習志野市">習志野市</option>
+          <option value="八千代市">八千代市</option>
+          <option value="その他千葉県内">その他千葉県内</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>詳細住所（任意）</label>
+      <input type="text" id="prop-addr" placeholder="例：千葉市美浜区打瀬2丁目">
+    </div>
+    <div class="row3">
+      <div class="field">
+        <label>賃料</label>
+        <input type="text" id="prop-rent" placeholder="例：8.5万円">
+      </div>
+      <div class="field">
+        <label>間取り</label>
+        <input type="text" id="prop-layout" placeholder="例：2LDK">
+      </div>
+      <div class="field">
+        <label>専有面積</label>
+        <input type="text" id="prop-size" placeholder="例：58㎡">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>最寄り駅・路線</label>
+        <select id="prop-station-base">
+          <option value="">路線を選択</option>
+          <optgroup label="JR">
+            <option value="JR総武線 千葉駅">JR総武線 千葉駅</option>
+            <option value="JR総武線 稲毛駅">JR総武線 稲毛駅</option>
+            <option value="JR総武線 西千葉駅">JR総武線 西千葉駅</option>
+            <option value="JR京葉線 海浜幕張駅">JR京葉線 海浜幕張駅</option>
+            <option value="JR京葉線 検見川浜駅">JR京葉線 検見川浜駅</option>
+            <option value="JR京葉線 稲毛海岸駅">JR京葉線 稲毛海岸駅</option>
+            <option value="JR外房線 蘇我駅">JR外房線 蘇我駅</option>
+            <option value="JR内房線 千葉みなと駅">JR内房線 千葉みなと駅</option>
+          </optgroup>
+          <optgroup label="千葉都市モノレール">
+            <option value="千葉都市モノレール 千葉駅">モノレール 千葉駅</option>
+            <option value="千葉都市モノレール 千城台駅">モノレール 千城台駅</option>
+            <option value="千葉都市モノレール 千葉みなと駅">モノレール 千葉みなと駅</option>
+          </optgroup>
+          <optgroup label="新京成・東葉高速">
+            <option value="新京成線 新津田沼駅">新京成線 新津田沼駅</option>
+            <option value="東葉高速線 八千代緑が丘駅">東葉高速線 八千代緑が丘駅</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label>徒歩（分）</label>
+        <input type="text" id="prop-walk" placeholder="例：8分">
+      </div>
+    </div>
+    <div class="field">
+      <label>築年数</label>
+      <input type="text" id="prop-age" placeholder="例：築5年（2020年築）">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">アピールポイント</div>
+    <div class="section-label">設備・仕様</div>
+    <div class="tags">
+      <span class="tag" onclick="toggleTag(this)">オートロック</span>
+      <span class="tag" onclick="toggleTag(this)">宅配ボックス</span>
+      <span class="tag" onclick="toggleTag(this)">システムキッチン</span>
+      <span class="tag" onclick="toggleTag(this)">浴室乾燥機</span>
+      <span class="tag" onclick="toggleTag(this)">床暖房</span>
+      <span class="tag" onclick="toggleTag(this)">追い焚き機能</span>
+      <span class="tag" onclick="toggleTag(this)">独立洗面台</span>
+      <span class="tag" onclick="toggleTag(this)">IHクッキングヒーター</span>
+    </div>
+    <div class="section-label">部屋の特徴</div>
+    <div class="tags">
+      <span class="tag" onclick="toggleTag(this)">日当たり良好</span>
+      <span class="tag" onclick="toggleTag(this)">角部屋</span>
+      <span class="tag" onclick="toggleTag(this)">最上階</span>
+      <span class="tag" onclick="toggleTag(this)">収納充実</span>
+      <span class="tag" onclick="toggleTag(this)">広めのバルコニー</span>
+      <span class="tag" onclick="toggleTag(this)">海が見える</span>
+      <span class="tag" onclick="toggleTag(this)">リノベーション済み</span>
+    </div>
+    <div class="section-label">千葉エリア特有の強み</div>
+    <div class="tags">
+      <span class="tag" onclick="toggleTag(this)">イオンモール近く</span>
+      <span class="tag" onclick="toggleTag(this)">海浜公園まで徒歩圏</span>
+      <span class="tag" onclick="toggleTag(this)">幕張メッセ近く</span>
+      <span class="tag" onclick="toggleTag(this)">アウトレット近く</span>
+      <span class="tag" onclick="toggleTag(this)">県庁・官公庁エリア</span>
+      <span class="tag" onclick="toggleTag(this)">ペット可</span>
+      <span class="tag" onclick="toggleTag(this)">駐車場あり</span>
+      <span class="tag" onclick="toggleTag(this)">駐輪場あり</span>
+      <span class="tag" onclick="toggleTag(this)">東京駅まで30分圏内</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ターゲット &amp; トーン</div>
+    <div class="row2">
+      <div class="field">
+        <label>ターゲット</label>
+        <select id="target">
+          <option value="単身者（20〜30代）">単身者（20〜30代）</option>
+          <option value="カップル・新婚">カップル・新婚</option>
+          <option value="ファミリー">ファミリー</option>
+          <option value="法人・転勤者">法人・転勤者</option>
+          <option value="シニア・定年後">シニア・定年後</option>
+          <option value="学生">学生</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>トーン</label>
+        <select id="tone">
+          <option value="おしゃれ・スタイリッシュ">おしゃれ・スタイリッシュ</option>
+          <option value="温かみ・アットホーム">温かみ・アットホーム</option>
+          <option value="高級感・上質">高級感・上質</option>
+          <option value="コスパ重視・実用的">コスパ重視・実用的</option>
+          <option value="ナチュラル・海辺の暮らし">ナチュラル・海辺の暮らし</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>補足・セールスポイント（自由入力）</label>
+      <textarea id="extra" placeholder="例：稲毛の海まで自転車5分、近隣に大型スーパー2軒、小中学校も近くファミリーに最適など"></textarea>
+    </div>
+  </div>
+
+  <button class="gen-btn" onclick="generate()" id="gen-btn">✦　紹介文を生成する</button>
+
+  <div class="results" id="results"></div>
+
+</div>
+
+<script>
+  const WORKER_URL = 'https://realestate-proxy.boston1215.workers.dev/';
+
+  function toggleTag(el) { el.classList.toggle('active'); }
+
+  function getFeatures() {
+    return Array.from(document.querySelectorAll('.tag.active')).map(t => t.textContent.trim());
+  }
+
+  async function generate() {
+    const name = document.getElementById('prop-name').value.trim();
+    const area = document.getElementById('prop-area').value;
+    const addr = document.getElementById('prop-addr').value.trim();
+    const rent = document.getElementById('prop-rent').value.trim();
+    const layout = document.getElementById('prop-layout').value.trim();
+    const size = document.getElementById('prop-size').value.trim();
+    const stationBase = document.getElementById('prop-station-base').value;
+    const walk = document.getElementById('prop-walk').value.trim();
+    const age = document.getElementById('prop-age').value.trim();
+    const target = document.getElementById('target').value;
+    const tone = document.getElementById('tone').value;
+    const extra = document.getElementById('extra').value.trim();
+    const features = getFeatures();
+    const station = stationBase ? stationBase + (walk ? ' 徒歩' + walk : '') : '';
+
+    if (!name && !rent && !layout) {
+      alert('物件名・賃料・間取りのいずれかを入力してください');
+      return;
+    }
+
+    const btn = document.getElementById('gen-btn');
+    btn.disabled = true;
+    btn.textContent = '生成中...';
+    document.getElementById('results').innerHTML = '<div class="loading"><span class="spinner"></span>AIが紹介文を生成しています...</div>';
+
+    const propInfo = `物件名：${name || '未設定'}
+エリア：${area}${addr ? '　' + addr : ''}
+賃料：${rent || '未設定'}
+間取り：${layout || '未設定'}
+専有面積：${size || '未設定'}
+最寄り駅：${station || '未設定'}
+築年数：${age || '未設定'}
+アピールポイント：${features.length ? features.join('、') : 'なし'}
+ターゲット：${target}
+トーン：${tone}
+補足：${extra || 'なし'}`;
+
+    const prompt = `あなたは千葉県エリアに詳しい不動産の優秀なコピーライターです。以下の物件情報をもとに、3種類の紹介文を作成してください。千葉エリアならではの生活利便性（買い物環境・自然・交通アクセス）も積極的に盛り込んでください。
+
+物件情報：
+${propInfo}
+
+以下のJSON形式で返してください（他のテキストは一切含めないこと）：
+{
+  "sns": "Instagram/SNS用の紹介文（絵文字あり、ハッシュタグあり、200〜300文字、テンション高め、千葉ならではの魅力を入れる）",
+  "portal": "SUUMO・ホームズ向けの物件説明文（です・ます調、500文字程度、詳細に、千葉エリアの生活環境も記載）",
+  "flyer": "チラシ・自社サイト向けのコピー（キャッチコピー1行＋説明文200文字程度、千葉らしさを出す）"
+}`;
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1200,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await res.json();
+      const text = data.content.map(i => i.text || '').join('');
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+
+      document.getElementById('results').innerHTML = `
+        <div class="result-card">
+          <div class="result-label"><div class="dot"></div><span>Instagram / SNS用</span></div>
+          <div class="result-text" id="r-sns">${escHtml(parsed.sns)}</div>
+          <button class="copy-btn" onclick="copyText('r-sns', this)">コピー</button>
+        </div>
+        <div class="result-card">
+          <div class="result-label"><div class="dot"></div><span>SUUMO / ホームズ用</span></div>
+          <div class="result-text" id="r-portal">${escHtml(parsed.portal)}</div>
+          <button class="copy-btn" onclick="copyText('r-portal', this)">コピー</button>
+        </div>
+        <div class="result-card">
+          <div class="result-label"><div class="dot"></div><span>チラシ / 自社サイト用</span></div>
+          <div class="result-text" id="r-flyer">${escHtml(parsed.flyer)}</div>
+          <button class="copy-btn" onclick="copyText('r-flyer', this)">コピー</button>
+        </div>
+      `;
+    } catch(e) {
+      document.getElementById('results').innerHTML = '<div class="error-msg">生成に失敗しました。時間をおいて再度お試しください。</div>';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '✦　もう一度生成する';
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function copyText(id, btn) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'コピーしました！';
+      setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
