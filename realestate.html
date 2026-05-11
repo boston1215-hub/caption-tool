@@ -191,21 +191,71 @@
       <button class="toggle-btn" onclick="switchAccess('bus', this)">🚌　バス利用</button>
     </div>
     <div class="access-panel show" id="panel-train">
-      <div class="row2">
+      <div class="station-row row3">
         <div class="field">
-          <label>路線名</label>
-          <input type="text" id="train-line" placeholder="例：JR京葉線">
+          <label>路線①</label>
+          <select id="train-line1">
+            <option value="">選択してください</option>
+            <optgroup label="JR">
+              <option>JR総武線</option>
+              <option>JR京葉線</option>
+              <option>JR外房線</option>
+              <option>JR内房線</option>
+              <option>JR成田線</option>
+              <option>JR常磐線</option>
+            </optgroup>
+            <optgroup label="私鉄・その他">
+              <option>千葉都市モノレール</option>
+              <option>新京成線</option>
+              <option>東葉高速線</option>
+              <option>京成本線</option>
+              <option>京成千葉線</option>
+              <option>東武野田線</option>
+            </optgroup>
+          </select>
         </div>
         <div class="field">
-          <label>最寄り駅</label>
-          <input type="text" id="train-station" placeholder="例：海浜幕張駅">
+          <label>最寄り駅①</label>
+          <input type="text" id="train-station1" placeholder="例：海浜幕張駅">
+        </div>
+        <div class="field">
+          <label>徒歩①（分）</label>
+          <input type="text" id="train-walk1" placeholder="例：8">
         </div>
       </div>
-      <div class="field" style="max-width: 200px;">
-        <label>徒歩（分）</label>
-        <input type="text" id="train-walk" placeholder="例：8">
+      <div class="station-row row3" style="margin-top: 8px;">
+        <div class="field">
+          <label>路線②（任意）</label>
+          <select id="train-line2">
+            <option value="">なし</option>
+            <optgroup label="JR">
+              <option>JR総武線</option>
+              <option>JR京葉線</option>
+              <option>JR外房線</option>
+              <option>JR内房線</option>
+              <option>JR成田線</option>
+              <option>JR常磐線</option>
+            </optgroup>
+            <optgroup label="私鉄・その他">
+              <option>千葉都市モノレール</option>
+              <option>新京成線</option>
+              <option>東葉高速線</option>
+              <option>京成本線</option>
+              <option>京成千葉線</option>
+              <option>東武野田線</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="field">
+          <label>最寄り駅②（任意）</label>
+          <input type="text" id="train-station2" placeholder="例：稲毛海岸駅">
+        </div>
+        <div class="field">
+          <label>徒歩②（分）</label>
+          <input type="text" id="train-walk2" placeholder="例：12">
+        </div>
       </div>
-      <div class="hint">路線・駅名は自由に入力できます</div>
+      <div class="hint" style="margin-top: 6px;">駅名は自由に入力できます。路線がリストにない場合は②の路線欄を空白にして駅名のみ入力してください</div>
     </div>
     <div class="access-panel" id="panel-bus">
       <div class="row2">
@@ -337,15 +387,29 @@
 
   function getAccessText() {
     if (currentAccess === 'train') {
-      const line = document.getElementById('train-line').value.trim();
-      const station = document.getElementById('train-station').value.trim();
-      const walk = document.getElementById('train-walk').value.trim();
-      if (!station && !line) return '未設定';
-      let txt = '';
-      if (line) txt += line + ' ';
-      if (station) txt += station;
-      if (walk) txt += ' 徒歩' + walk + '分';
-      return txt;
+      const line1 = document.getElementById('train-line1').value.trim();
+      const station1 = document.getElementById('train-station1').value.trim();
+      const walk1 = document.getElementById('train-walk1').value.trim();
+      const line2 = document.getElementById('train-line2').value.trim();
+      const station2 = document.getElementById('train-station2').value.trim();
+      const walk2 = document.getElementById('train-walk2').value.trim();
+      if (!station1 && !line1) return '未設定';
+      let parts = [];
+      if (station1) {
+        let t = '';
+        if (line1) t += line1 + ' ';
+        t += station1;
+        if (walk1) t += ' 徒歩' + walk1 + '分';
+        parts.push(t);
+      }
+      if (station2) {
+        let t = '';
+        if (line2) t += line2 + ' ';
+        t += station2;
+        if (walk2) t += ' 徒歩' + walk2 + '分';
+        parts.push(t);
+      }
+      return parts.join('　／　');
     } else {
       const stop = document.getElementById('bus-stop').value.trim();
       const busWalk = document.getElementById('bus-walk').value.trim();
