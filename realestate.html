@@ -12,164 +12,96 @@
       color: #1a1a1a;
       line-height: 1.7;
     }
-    .page-header {
-      background: #0f4c81;
-      color: #fff;
-      padding: 1.5rem 2rem;
-    }
+    .page-header { background: #0f4c81; color: #fff; padding: 1.5rem 2rem; }
     .page-header h1 { font-size: 20px; font-weight: 600; }
     .page-header p { font-size: 13px; opacity: 0.75; margin-top: 4px; }
     .badges { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
     .badge {
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-      font-size: 11px;
-      padding: 2px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.2); color: #fff; font-size: 11px;
+      padding: 2px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
     }
     .main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
     .card {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid #e4e6ea;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+      background: #fff; border-radius: 12px; border: 1px solid #e4e6ea;
+      padding: 1.25rem 1.5rem; margin-bottom: 1rem;
     }
     .card-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #888;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
+      font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px;
       border-bottom: 1px solid #f0f0f0;
     }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; }
     .field input, .field select, .field textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #1a1a1a;
-      background: #fff;
+      width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 14px; font-family: inherit; color: #1a1a1a; background: #fff;
       transition: border-color 0.15s;
     }
     .field input:focus, .field select:focus, .field textarea:focus {
-      outline: none;
-      border-color: #0f4c81;
+      outline: none; border-color: #0f4c81;
     }
     .field textarea { height: 80px; resize: vertical; }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .access-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+    .toggle-btn {
+      padding: 6px 18px; border-radius: 20px; border: 1px solid #ddd;
+      background: #fff; color: #888; font-size: 13px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .toggle-btn.active { background: #0f4c81; color: #fff; border-color: #0f4c81; }
+    .access-panel { display: none; }
+    .access-panel.show { display: block; }
     .section-label {
-      font-size: 11px;
-      color: #aaa;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      margin: 14px 0 6px;
+      font-size: 11px; color: #aaa; font-weight: 600;
+      letter-spacing: 0.06em; margin: 14px 0 6px;
     }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag {
-      border: 1px solid #ddd;
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 13px;
-      cursor: pointer;
-      color: #666;
-      background: #fff;
-      transition: all 0.15s;
-      user-select: none;
+      border: 1px solid #ddd; border-radius: 20px; padding: 4px 14px;
+      font-size: 13px; cursor: pointer; color: #666; background: #fff;
+      transition: all 0.15s; user-select: none;
     }
     .tag:hover { border-color: #0f4c81; color: #0f4c81; }
     .tag.active { background: #e8f0fb; color: #0f4c81; border-color: #7aaad6; font-weight: 500; }
     .gen-btn {
-      width: 100%;
-      padding: 14px;
-      background: #0f4c81;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: background 0.15s;
-      font-family: inherit;
+      width: 100%; padding: 14px; background: #0f4c81; color: #fff; border: none;
+      border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;
+      margin-top: 0.5rem; transition: background 0.15s; font-family: inherit;
     }
     .gen-btn:hover { background: #0a3560; }
     .gen-btn:disabled { background: #bbb; cursor: not-allowed; }
     .results { margin-top: 1.5rem; }
     .result-card {
-      background: #fff;
-      border: 1px solid #e4e6ea;
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+      background: #fff; border: 1px solid #e4e6ea;
+      border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem;
     }
     .result-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #f0f0f0;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+      padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;
     }
-    .result-label .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #0f4c81;
-    }
+    .result-label .dot { width: 8px; height: 8px; border-radius: 50%; background: #0f4c81; }
     .result-label span { font-size: 13px; font-weight: 600; color: #0f4c81; }
-    .result-text {
-      font-size: 14px;
-      color: #1a1a1a;
-      line-height: 1.85;
-      white-space: pre-wrap;
-    }
+    .result-text { font-size: 14px; color: #1a1a1a; line-height: 1.85; white-space: pre-wrap; }
     .copy-btn {
-      margin-top: 12px;
-      font-size: 12px;
-      padding: 5px 14px;
-      cursor: pointer;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      background: #f8f8f8;
-      color: #666;
-      font-family: inherit;
-      transition: all 0.15s;
+      margin-top: 12px; font-size: 12px; padding: 5px 14px; cursor: pointer;
+      border-radius: 6px; border: 1px solid #ddd; background: #f8f8f8;
+      color: #666; font-family: inherit; transition: all 0.15s;
     }
     .copy-btn:hover { background: #fff; border-color: #0f4c81; color: #0f4c81; }
-    .loading {
-      text-align: center;
-      padding: 2.5rem;
-      color: #888;
-      font-size: 14px;
-    }
+    .loading { text-align: center; padding: 2.5rem; color: #888; font-size: 14px; }
     .spinner {
-      display: inline-block;
-      width: 20px; height: 20px;
-      border: 2px solid #ddd;
-      border-top-color: #0f4c81;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
+      display: inline-block; width: 20px; height: 20px;
+      border: 2px solid #ddd; border-top-color: #0f4c81;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-right: 8px; vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .error-msg {
-      background: #fff0f0;
-      border: 1px solid #ffcccc;
-      border-radius: 8px;
-      padding: 1rem;
-      color: #cc3333;
-      font-size: 14px;
-      text-align: center;
+      background: #fff0f0; border: 1px solid #ffcccc;
+      border-radius: 8px; padding: 1rem; color: #cc3333; font-size: 14px; text-align: center;
     }
+    .hint { font-size: 12px; color: #aaa; margin-top: 3px; }
     @media (max-width: 600px) {
       .row2, .row3 { grid-template-columns: 1fr; }
       .page-header { padding: 1.25rem 1rem; }
@@ -234,37 +166,6 @@
         <input type="text" id="prop-size" placeholder="例：58㎡">
       </div>
     </div>
-    <div class="row2">
-      <div class="field">
-        <label>最寄り駅・路線</label>
-        <select id="prop-station-base">
-          <option value="">路線を選択</option>
-          <optgroup label="JR">
-            <option value="JR総武線 千葉駅">JR総武線 千葉駅</option>
-            <option value="JR総武線 稲毛駅">JR総武線 稲毛駅</option>
-            <option value="JR総武線 西千葉駅">JR総武線 西千葉駅</option>
-            <option value="JR京葉線 海浜幕張駅">JR京葉線 海浜幕張駅</option>
-            <option value="JR京葉線 検見川浜駅">JR京葉線 検見川浜駅</option>
-            <option value="JR京葉線 稲毛海岸駅">JR京葉線 稲毛海岸駅</option>
-            <option value="JR外房線 蘇我駅">JR外房線 蘇我駅</option>
-            <option value="JR内房線 千葉みなと駅">JR内房線 千葉みなと駅</option>
-          </optgroup>
-          <optgroup label="千葉都市モノレール">
-            <option value="千葉都市モノレール 千葉駅">モノレール 千葉駅</option>
-            <option value="千葉都市モノレール 千城台駅">モノレール 千城台駅</option>
-            <option value="千葉都市モノレール 千葉みなと駅">モノレール 千葉みなと駅</option>
-          </optgroup>
-          <optgroup label="新京成・東葉高速">
-            <option value="新京成線 新津田沼駅">新京成線 新津田沼駅</option>
-            <option value="東葉高速線 八千代緑が丘駅">東葉高速線 八千代緑が丘駅</option>
-          </optgroup>
-        </select>
-      </div>
-      <div class="field">
-        <label>徒歩（分）</label>
-        <input type="text" id="prop-walk" placeholder="例：8分">
-      </div>
-    </div>
     <div class="field">
       <label>築年数</label>
       <input type="text" id="prop-age" placeholder="例：築5年（2020年築）">
@@ -272,9 +173,65 @@
   </div>
 
   <div class="card">
+    <div class="card-title">アクセス情報</div>
+    <div class="access-toggle">
+      <button class="toggle-btn active" onclick="switchAccess('train', this)">🚃　電車・徒歩</button>
+      <button class="toggle-btn" onclick="switchAccess('bus', this)">🚌　バス利用</button>
+    </div>
+    <div class="access-panel show" id="panel-train">
+      <div class="row2">
+        <div class="field">
+          <label>路線名</label>
+          <input type="text" id="train-line" placeholder="例：JR京葉線">
+        </div>
+        <div class="field">
+          <label>最寄り駅</label>
+          <input type="text" id="train-station" placeholder="例：海浜幕張駅">
+        </div>
+      </div>
+      <div class="field" style="max-width: 200px;">
+        <label>徒歩（分）</label>
+        <input type="text" id="train-walk" placeholder="例：8">
+      </div>
+      <div class="hint">路線・駅名は自由に入力できます</div>
+    </div>
+    <div class="access-panel" id="panel-bus">
+      <div class="row2">
+        <div class="field">
+          <label>最寄りバス停</label>
+          <input type="text" id="bus-stop" placeholder="例：幕張本郷バス停">
+        </div>
+        <div class="field">
+          <label>バス停まで徒歩（分）</label>
+          <input type="text" id="bus-walk" placeholder="例：3">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>バス乗車時間（分）</label>
+          <input type="text" id="bus-ride" placeholder="例：15">
+        </div>
+        <div class="field">
+          <label>下車駅・バスターミナル</label>
+          <input type="text" id="bus-dest" placeholder="例：千葉駅">
+        </div>
+      </div>
+      <div class="field">
+        <label>路線・系統名（任意）</label>
+        <input type="text" id="bus-line" placeholder="例：京成バス 幕張線">
+      </div>
+      <div class="hint">※ 電車も利用できる場合は補足欄に記載してください</div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">アピールポイント</div>
+
     <div class="section-label">設備・仕様</div>
     <div class="tags">
+      <span class="tag" onclick="toggleTag(this)">バス・トイレ別</span>
+      <span class="tag" onclick="toggleTag(this)">エレベーター</span>
+      <span class="tag" onclick="toggleTag(this)">24Hゴミ出し可</span>
       <span class="tag" onclick="toggleTag(this)">オートロック</span>
       <span class="tag" onclick="toggleTag(this)">宅配ボックス</span>
       <span class="tag" onclick="toggleTag(this)">システムキッチン</span>
@@ -284,6 +241,7 @@
       <span class="tag" onclick="toggleTag(this)">独立洗面台</span>
       <span class="tag" onclick="toggleTag(this)">IHクッキングヒーター</span>
     </div>
+
     <div class="section-label">部屋の特徴</div>
     <div class="tags">
       <span class="tag" onclick="toggleTag(this)">日当たり良好</span>
@@ -294,17 +252,19 @@
       <span class="tag" onclick="toggleTag(this)">海が見える</span>
       <span class="tag" onclick="toggleTag(this)">リノベーション済み</span>
     </div>
-    <div class="section-label">千葉エリア特有の強み</div>
+
+    <div class="section-label">エリアの特徴</div>
     <div class="tags">
-      <span class="tag" onclick="toggleTag(this)">イオンモール近く</span>
-      <span class="tag" onclick="toggleTag(this)">海浜公園まで徒歩圏</span>
+      <span class="tag" onclick="toggleTag(this)">ショッピングモール近く</span>
+      <span class="tag" onclick="toggleTag(this)">海沿い</span>
       <span class="tag" onclick="toggleTag(this)">幕張メッセ近く</span>
       <span class="tag" onclick="toggleTag(this)">アウトレット近く</span>
       <span class="tag" onclick="toggleTag(this)">県庁・官公庁エリア</span>
+      <span class="tag" onclick="toggleTag(this)">通学に便利</span>
+      <span class="tag" onclick="toggleTag(this)">小中学校近く</span>
       <span class="tag" onclick="toggleTag(this)">ペット可</span>
       <span class="tag" onclick="toggleTag(this)">駐車場あり</span>
       <span class="tag" onclick="toggleTag(this)">駐輪場あり</span>
-      <span class="tag" onclick="toggleTag(this)">東京駅まで30分圏内</span>
     </div>
   </div>
 
@@ -340,18 +300,53 @@
   </div>
 
   <button class="gen-btn" onclick="generate()" id="gen-btn">✦　紹介文を生成する</button>
-
   <div class="results" id="results"></div>
 
 </div>
 
 <script>
   const WORKER_URL = 'https://realestate-proxy.boston1215.workers.dev/';
+  let currentAccess = 'train';
+
+  function switchAccess(type, btn) {
+    currentAccess = type;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.access-panel').forEach(p => p.classList.remove('show'));
+    document.getElementById('panel-' + type).classList.add('show');
+  }
 
   function toggleTag(el) { el.classList.toggle('active'); }
 
   function getFeatures() {
     return Array.from(document.querySelectorAll('.tag.active')).map(t => t.textContent.trim());
+  }
+
+  function getAccessText() {
+    if (currentAccess === 'train') {
+      const line = document.getElementById('train-line').value.trim();
+      const station = document.getElementById('train-station').value.trim();
+      const walk = document.getElementById('train-walk').value.trim();
+      if (!station && !line) return '未設定';
+      let txt = '';
+      if (line) txt += line + ' ';
+      if (station) txt += station;
+      if (walk) txt += ' 徒歩' + walk + '分';
+      return txt;
+    } else {
+      const stop = document.getElementById('bus-stop').value.trim();
+      const busWalk = document.getElementById('bus-walk').value.trim();
+      const ride = document.getElementById('bus-ride').value.trim();
+      const dest = document.getElementById('bus-dest').value.trim();
+      const line = document.getElementById('bus-line').value.trim();
+      if (!stop && !dest) return '未設定';
+      let txt = 'バス利用 ／ ';
+      if (stop) txt += stop + (busWalk ? '（徒歩' + busWalk + '分）' : '');
+      if (ride) txt += ' → バス' + ride + '分';
+      if (dest) txt += ' → ' + dest + '下車';
+      if (line) txt += '（' + line + '）';
+      return txt;
+    }
   }
 
   async function generate() {
@@ -361,14 +356,12 @@
     const rent = document.getElementById('prop-rent').value.trim();
     const layout = document.getElementById('prop-layout').value.trim();
     const size = document.getElementById('prop-size').value.trim();
-    const stationBase = document.getElementById('prop-station-base').value;
-    const walk = document.getElementById('prop-walk').value.trim();
     const age = document.getElementById('prop-age').value.trim();
     const target = document.getElementById('target').value;
     const tone = document.getElementById('tone').value;
     const extra = document.getElementById('extra').value.trim();
     const features = getFeatures();
-    const station = stationBase ? stationBase + (walk ? ' 徒歩' + walk : '') : '';
+    const access = getAccessText();
 
     if (!name && !rent && !layout) {
       alert('物件名・賃料・間取りのいずれかを入力してください');
@@ -385,7 +378,7 @@
 賃料：${rent || '未設定'}
 間取り：${layout || '未設定'}
 専有面積：${size || '未設定'}
-最寄り駅：${station || '未設定'}
+アクセス：${access}
 築年数：${age || '未設定'}
 アピールポイント：${features.length ? features.join('、') : 'なし'}
 ターゲット：${target}
