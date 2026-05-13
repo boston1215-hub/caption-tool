@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram キャプション生成 | 芝信 大井支店</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #f0f7f2; color: #1a1a1a; min-height: 100vh; }
+  .container { max-width: 480px; margin: 0 auto; padding: 0 0 4rem; }
+
+  /* ヘッダー */
+  .page-header {
+    background: #1a7a3c;
+    padding: 1.25rem 1.25rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-logo {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .header-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .header-text {}
+  .header-text h1 { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 400; }
+  .header-text p { font-size: 16px; color: #fff; font-weight: 700; margin-top: 1px; }
+  .powered-by { margin-left: auto; font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 0.03em; white-space: nowrap; }
+
+  .inner { padding: 1.25rem 1rem; }
+
+  /* 選択画面 */
+  .select-screen { display: block; }
+  .select-header { padding: 0.5rem 0 1.25rem; }
+  .select-header h2 { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+  .select-header p { font-size: 13px; color: #888; }
+  .account-list { display: flex; flex-direction: column; gap: 10px; }
+  .account-card {
+    background: #fff; border: 1px solid #d4eedd; border-radius: 14px;
+    padding: 1rem 1.125rem; cursor: pointer; display: flex; align-items: center; gap: 14px;
+    transition: all 0.15s;
+  }
+  .account-card:active { transform: scale(0.98); border-color: #1a7a3c; }
+  .account-avatar {
+    width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .account-info h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .account-info p { font-size: 12px; color: #888; margin-top: 2px; }
+  .account-arrow { margin-left: auto; color: #bbb; font-size: 18px; }
+
+  /* ツール画面 */
+  .tool-screen { display: none; }
+  .tool-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #d4eedd;
+  }
+  .back-btn { background: none; border: none; cursor: pointer; padding: 4px 8px 4px 0; font-size: 20px; color: #999; }
+  .tool-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .tool-header-text h2 { font-size: 15px; font-weight: 600; }
+  .tool-header-text p { font-size: 12px; color: #888; margin-top: 1px; }
+
+  .section { margin-bottom: 1.125rem; }
+  label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: 500; }
+  input[type="text"], textarea, select {
+    width: 100%; padding: 11px 13px; border: 1px solid #c0daca; border-radius: 10px;
+    background: #fff; color: #1a1a1a; font-size: 15px; font-family: inherit;
+    outline: none; transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus { border-color: #1a7a3c; }
+  textarea { resize: none; height: 76px; line-height: 1.5; }
+
+  .upload-area {
+    border: 1.5px dashed #b8dfc8; border-radius: 10px; padding: 1.5rem;
+    text-align: center; cursor: pointer; background: #fff; position: relative;
+  }
+  .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 28px; margin-bottom: 6px; }
+  .upload-text { font-size: 13px; color: #999; }
+  #preview-img { width: 100%; border-radius: 10px; margin-top: 10px; display: none; max-height: 220px; object-fit: cover; }
+
+  .tone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .tone-btn {
+    padding: 10px 8px; border: 1px solid #c0daca; border-radius: 10px;
+    background: #fff; color: #666; font-size: 13px; cursor: pointer;
+    text-align: center; font-family: inherit; transition: all 0.15s;
+  }
+  .tone-btn.active { border-color: #1a7a3c; color: #0f4f27; background: #e6f5ec; font-weight: 600; }
+
+  .gen-btn {
+    width: 100%; padding: 14px; background: #1a7a3c; color: #fff; border: none;
+    border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
+    margin-top: 0.5rem; font-family: inherit; transition: background 0.15s;
+  }
+  .gen-btn:hover { background: #1450921; }
+  .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .error-msg { font-size: 13px; color: #c0392b; margin-top: 8px; text-align: center; min-height: 20px; }
+
+  .result-area { margin-top: 1.5rem; display: none; }
+  .variation-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .var-tab {
+    padding: 6px 14px; border: 1px solid #c0daca; border-radius: 99px;
+    background: #fff; color: #888; font-size: 12px; cursor: pointer; font-family: inherit;
+  }
+  .var-tab.active { border-color: #1a7a3c; color: #0f4f27; background: #e6f5ec; font-weight: 600; }
+  .result-card { background: #fff; border: 1px solid #d4eedd; border-radius: 12px; padding: 1rem 1.125rem; margin-bottom: 10px; }
+  .result-label { font-size: 10px; color: #bbb; margin-bottom: 8px; letter-spacing: 0.1em; font-weight: 600; }
+  .result-text { font-size: 14px; color: #1a1a1a; line-height: 1.8; white-space: pre-wrap; }
+  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .copy-btn, .insta-btn {
+    padding: 11px; border-radius: 10px; font-size: 13px; cursor: pointer;
+    text-align: center; font-family: inherit; font-weight: 500; text-decoration: none; display: block;
+  }
+  .copy-btn { background: #e6f5ec; color: #0f4f27; border: none; }
+  .insta-btn { color: #fff; border: none; background: #1a7a3c; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ページヘッダー -->
+  <div class="page-header">
+    <div class="header-logo">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLoAAALQCAYAAACXJxlmAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAADxUlEQVR4nO2c2Y7jIBBF8aj//5fph5FbiFDUCi6ce6SWRk7MfqkFMlettQAA/vPv6QYAkAkIAoAGCAKABggCgAYIAoCGH+f7bYrqcpYFwON4LESfr0X+FhxPtMtUC4QBDsYqCG7RQxTgSCyCkC52WAtwHDuyTBAFOAatIKyLG9YCHIFGEBELGsIAqXniYA7nFSAtUkFgVwdfgUQQkWKAdXgnGlc40m0eleUqH3eZ3kst3x2zmfo9u8sUPZCwDs9wFd9cjuaNKq9/vmvOpe0phWnTTBD3ixHCgBj28jarsK0/3G3XWvw7DHgf/QZXief957NnKTZNyfXvtrMWYaTo6BcxupLPLVSpW/T0HTaJEEf9F7dL83sIWAlgZbRgLS65JlbQll1KWZ9lsliH7JmRb27b1fyNPqP+fbcr89iVUvy/mIuCMs8zQfWfj1w7q7s2y05wbeq/L63L4tZ4mC1OjWt0j3clPpeWKWVmbfp6qOckKwXBTWD63aJ87m5SMUi+H41nEUrEMYohpf2LTMxo+pnGZZrtdtldoh7JpLt2pYMYBbWzPmo2kBRczH9lqWn0yFXxdprKKnjKW9kmienuP+PqkLhM6gMoQdnaDBSFdi1Q9WnbaCLSZeJ8yB30g08FfyvMd1/XzN2atUE7uSN/PgsjMbTPRu2tZfyeJ+bh2vdHlqBaSj+AVkskjW88B01cmZTVkPjD0t1/VQwjtXhWd+oxThNEKXQa74kBlgqSC849h5/3Ox7LsvKdFq3F3j6nJwpilOmggjvqu15G7pH2nRsucyPxk7lzgagTZm78pDEUV8eIFfP2wYmC6PG6S1wuO6JOqv6VqdpVLpMkuNfWm8Z9Ok0Q1I4/c10su/eO4HTmd6dZIATaDUMylhFWhEI8l6cJYoQkQLZ+h3ouSb1q05YrRcgFwd7U6m6WbRpvEMTNLDDlBtCbs5+VM6o7wteOgqrTM15cn6iUq4Ylgj3tJ6RX0e1m0rigdn8avHW/DYnA07qEb7AQ3ARQFoOjzV5JRciJLsNCWGWRVotee5fK1E9OENlOPkdog2ZL4L1rDDSnsZbFvFMMK4LkPj6TbFaqfkoshPU0eCUeoVomioofNGVFZ1o0ZUWIqcVyAt2PYVRq21POR1u5y33ayiPJ4F5EsdNd4u42rRKDx8o+leVy32Xa5UK9SQylPNufds5WWaAV5TwyZloL0RItjLeJAByIJ8vktRYQAEiHN+2qDbghApCaqHMIylpAAOAoIg/msPjB8Zx2dQOApUAQADRAEAA0QBAANPwCNy4ZZysrV0wAAAAASUVORK5CYII=" alt="芝信用金庫">
+    </div>
+    <div class="header-text">
+      <h1>芝信用金庫</h1>
+      <p>大井支店 SNSツール</p>
+    </div>
+    <div class="powered-by">Powered by<br>asChronos</div>
+  </div>
+
+  <div class="inner">
+
+    <!-- アカウント選択画面 -->
+    <div class="select-screen" id="select-screen">
+      <div class="select-header">
+        <h2>📸 キャプション生成</h2>
+        <p>投稿するアカウントを選んでください</p>
+      </div>
+      <div class="account-list" id="account-list"></div>
+    </div>
+
+    <!-- ツール画面 -->
+    <div class="tool-screen" id="tool-screen">
+      <div class="tool-header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="tool-avatar" id="tool-avatar"></div>
+        <div class="tool-header-text">
+          <h2 id="tool-name"></h2>
+          <p id="tool-sub"></p>
+        </div>
+      </div>
+
+      <div class="section">
+        <label>写真（任意）</label>
+        <div class="upload-area">
+          <input type="file" accept="image/*" id="photo-input" onchange="handlePhoto(this)">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text" id="upload-text">タップして写真を選択</div>
+        </div>
+        <img id="preview-img" alt="プレビュー">
+      </div>
+
+      <div id="main-input-section">
+        <div class="section">
+          <label id="input-label">投稿内容</label>
+          <input type="text" id="main-input" placeholder="例：新規融資キャンペーン開始" maxlength="80">
+        </div>
+        <div class="section">
+          <label id="sub-label">補足・詳細</label>
+          <input type="text" id="sub-input" placeholder="例：金利優遇・相談無料・来店不要" maxlength="80">
+        </div>
+        <div class="section">
+          <label>一言メモ（任意）</label>
+          <textarea id="memo" placeholder="例：地域の皆さんへの感謝を込めて"></textarea>
+        </div>
+      </div>
+      <div id="custom-input-section" style="display:none;"></div>
+
+      <div class="section">
+        <label>カテゴリ</label>
+        <div class="tone-grid" id="tone-grid"></div>
+      </div>
+
+      <div class="section">
+        <label>テイスト</label>
+        <div class="tone-grid" id="style-grid">
+          <button class="tone-btn active" onclick="selectStyle(this,'カジュアル')">カジュアル</button>
+          <button class="tone-btn" onclick="selectStyle(this,'丁寧')">丁寧</button>
+          <button class="tone-btn" onclick="selectStyle(this,'ビジネス')">ビジネス</button>
+          <button class="tone-btn" onclick="selectStyle(this,'事実のみ')">事実のみ</button>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="gen-btn" onclick="generateCaption()">キャプションを生成する</button>
+      <div class="error-msg" id="error-msg"></div>
+
+      <div class="result-area" id="result-area">
+        <div class="variation-tabs" id="var-tabs"></div>
+        <div class="result-card">
+          <div class="result-label">CAPTION</div>
+          <div class="result-text" id="result-text"></div>
+        </div>
+        <div class="action-row">
+          <button class="copy-btn" onclick="copyCaption()">コピーする</button>
+          <a class="insta-btn" id="insta-link" href="#" target="_blank">Instagramを開く</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /inner -->
+</div><!-- /container -->
+
+<script>
+const PROXY_URL = 'https://caption-proxy.boston1215.workers.dev/';
+
+const ACCOUNTS = [
+  {
+    id: 'tatekawa',
+    name: '大井支店',
+    sub: '芝信用金庫',
+    avatar: '大井',
+    color: '#1a7a3c',
+    instaUrl: 'https://www.instagram.com/',
+    inputLabel: '投稿内容・テーマ',
+    inputPlaceholder: '例：融資相談会のお知らせ、地域イベント参加',
+    tones: ['お知らせ・告知', 'スタッフ紹介', '地域密着', 'イベント・活動報告'],
+    systemPrompt: `あなたは芝信用金庫・立会川支店のInstagramキャプションを書く専門家です。
+
+支店について：
+- 芝信用金庫 立会川支店（東京・品川区）
+- 地域の中小企業・個人事業主・住民に密着した地元の信用金庫の支店
+- 「地域に根ざし、人々に寄り添い、中小企業とともに歩む」が信金のモットー
+- 立会川・大井町・荏原エリアを中心に活動
+- 気軽に相談できる、顔の見える金融機関として親しまれている
+
+トーンの特徴：
+- 堅すぎず、でも信頼感がある。地域の人に語りかける温度感
+- 「銀行らしくない、でも頼れる」イメージ
+- スタッフの人柄や支店の日常が伝わるような表現を心がける
+- 地域への愛着・貢献が自然に滲む
+
+キャプションのルール：
+- 120〜200文字程度
+- 改行を使ってリズムを作る
+- ハッシュタグは最後に5〜7個
+- 必ず「#芝信用金庫」「#立会川支店」を含める
+- 「#品川区」「#大井町」「#立会川」などエリアタグを1〜2個追加
+- 日本語のみ
+- 絵文字は1〜3個、適度に使う`,
+    tonePrompts: {
+      'お知らせ・告知': 'キャンペーン・サービス・営業情報のお知らせ。シンプルで伝わりやすく。読んだ人が「相談してみようかな」と思えるように。',
+      'スタッフ紹介': 'スタッフの人柄・仕事への思い・日常の一コマを。親しみやすく、でも仕事への誠実さが伝わるように。',
+      '地域密着': '地域への愛着・貢献・地元ネタを。「私たちはこの街の一員」という温度感で。',
+      'イベント・活動報告': 'イベントへの参加・地域活動の報告。楽しさと感謝が伝わるように。写真がある場合は情景描写も。'
+    }
+  }
+];
+
+let currentAccount = null;
+let selectedTone = '';
+let selectedStyle = 'カジュアル';
+let photoBase64 = null;
+let photoMediaType = 'image/jpeg';
+let variations = [];
+
+function renderAccountList() {
+  const list = document.getElementById('account-list');
+  list.innerHTML = ACCOUNTS.map(acc => `
+    <div class="account-card" onclick="selectAccount('${acc.id}')">
+      <div class="account-avatar" style="background:${acc.color}">${acc.avatar}</div>
+      <div class="account-info">
+        <h3>${acc.name}</h3>
+        <p>${acc.sub}</p>
+      </div>
+      <span class="account-arrow">›</span>
+    </div>
+  `).join('');
+}
+
+function selectAccount(id) {
+  currentAccount = ACCOUNTS.find(a => a.id === id);
+  if (!currentAccount) return;
+
+  document.getElementById('tool-avatar').style.background = currentAccount.color;
+  document.getElementById('tool-avatar').textContent = currentAccount.avatar;
+  document.getElementById('tool-name').textContent = currentAccount.name;
+  document.getElementById('tool-sub').textContent = currentAccount.sub;
+  document.getElementById('insta-link').href = currentAccount.instaUrl;
+  document.querySelector('.insta-btn').style.background = currentAccount.color;
+
+  const mainInputSection = document.getElementById('main-input-section');
+  const customInputSection = document.getElementById('custom-input-section');
+
+  if (currentAccount.customInputs) {
+    mainInputSection.style.display = 'none';
+    customInputSection.style.display = 'block';
+    customInputSection.innerHTML = currentAccount.customInputs.map(inp => {
+      if (inp.type === 'select') {
+        return `<div class="section"><label>${inp.label}</label><select id="custom-${inp.id}" style="width:100%;padding:11px 13px;border:1px solid #c0daca;border-radius:10px;background:#fff;font-size:15px;font-family:inherit;outline:none;">${inp.options.map(o => `<option>${o}</option>`).join('')}</select></div>`;
+      } else if (inp.type === 'textarea') {
+        return `<div class="section"><label>${inp.label}</label><textarea id="custom-${inp.id}" placeholder="${inp.placeholder}" style="width:100%;padding:11px 13px;border:1px solid #c0daca;border-radius:10px;background:#fff;font-size:15px;font-family:inherit;resize:none;height:76px;"></textarea></div>`;
+      } else {
+        return `<div class="section"><label>${inp.label}</label><input type="text" id="custom-${inp.id}" placeholder="${inp.placeholder}" maxlength="80" style="width:100%;padding:11px 13px;border:1px solid #c0daca;border-radius:10px;background:#fff;font-size:15px;font-family:inherit;outline:none;"></div>`;
+      }
+    }).join('');
+  } else {
+    mainInputSection.style.display = 'block';
+    customInputSection.style.display = 'none';
+    document.getElementById('input-label').textContent = currentAccount.inputLabel || '投稿内容';
+    document.getElementById('main-input').placeholder = currentAccount.inputPlaceholder || '';
+  }
+
+  // カテゴリボタン
+  const toneGrid = document.getElementById('tone-grid');
+  toneGrid.innerHTML = currentAccount.tones.map((t, i) =>
+    `<button class="tone-btn ${i === 0 ? 'active' : ''}" onclick="selectTone(this,'${t}')">${t}</button>`
+  ).join('');
+  selectedTone = currentAccount.tones[0];
+
+  document.getElementById('select-screen').style.display = 'none';
+  document.getElementById('tool-screen').style.display = 'block';
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('error-msg').textContent = '';
+  photoBase64 = null;
+  document.getElementById('preview-img').style.display = 'none';
+  document.getElementById('upload-text').textContent = 'タップして写真を選択';
+}
+
+function goBack() {
+  document.getElementById('tool-screen').style.display = 'none';
+  document.getElementById('select-screen').style.display = 'block';
+}
+
+function selectTone(el, tone) {
+  document.querySelectorAll('#tone-grid .tone-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedTone = tone;
+}
+
+function selectStyle(el, style) {
+  document.querySelectorAll('#style-grid .tone-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedStyle = style;
+}
+
+function handlePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  photoMediaType = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoBase64 = e.target.result.split(',')[1];
+    const img = document.getElementById('preview-img');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('upload-text').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function generateCaption() {
+  const btn = document.getElementById('gen-btn');
+  const errEl = document.getElementById('error-msg');
+  errEl.textContent = '';
+
+  let mainInput = '';
+  if (currentAccount.customInputs) {
+    const parts = currentAccount.customInputs
+      .filter(inp => inp.type !== 'select' || true)
+      .map(inp => {
+        const el = document.getElementById('custom-' + inp.id);
+        return el ? el.value.trim() : '';
+      }).filter(Boolean);
+    mainInput = parts.join(' / ');
+  } else {
+    const v1 = document.getElementById('main-input').value.trim();
+    const v2 = document.getElementById('sub-input').value.trim();
+    mainInput = [v1, v2].filter(Boolean).join(' / ');
+  }
+
+  const memo = document.getElementById('memo') ? document.getElementById('memo').value.trim() : '';
+
+  if (!mainInput) {
+    errEl.textContent = '投稿内容を入力してください';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '生成中...';
+
+  const tonePrompt = currentAccount.tonePrompts?.[selectedTone] || selectedTone;
+  const stylePrompts = {
+    'カジュアル': '親しみやすくフレンドリーに。絵文字を適度に使って。',
+    '丁寧': '丁寧語で上品に。',
+    'ビジネス': 'ビジネスライクで簡潔に。プロフェッショナルな印象で。',
+    '事実のみ': '感想・形容詞は極力省いて事実だけを書く。シンプル・ドライに。'
+  };
+  const stylePrompt = stylePrompts[selectedStyle] || '';
+
+  const systemPrompt = `${currentAccount.systemPrompt}
+
+カテゴリ指示：${tonePrompt}
+テイスト指示：${stylePrompt}
+
+3パターンのキャプションを生成してください。
+必ずこの形式でJSONのみ返してください（マークダウン不要）：
+{"captions":["パターン1","パターン2","パターン3"]}`;
+
+  const userContent = [];
+  if (photoBase64) {
+    userContent.push({ type: 'image', source: { type: 'base64', media_type: photoMediaType, data: photoBase64 } });
+  }
+  userContent.push({
+    type: 'text',
+    text: `内容：${mainInput}${memo ? '\n補足：' + memo : ''}\nカテゴリ：${selectedTone}\nテイスト：${selectedStyle}`
+  });
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTPエラー ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.content.map(b => b.text || '').join('');
+    const jsonMatch = text.match(/\{[\s\S]*"captions"[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('生成失敗。再度お試しください。');
+    const parsed = JSON.parse(jsonMatch[0]);
+    variations = parsed.captions || [];
+    showVariation(0);
+    document.getElementById('result-area').style.display = 'block';
+    document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) {
+    errEl.textContent = 'エラー：' + e.message;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'キャプションを生成する';
+}
+
+function showVariation(idx) {
+  document.getElementById('result-text').textContent = variations[idx] || '';
+  const tabsEl = document.getElementById('var-tabs');
+  tabsEl.innerHTML = variations.map((_, i) =>
+    `<button class="var-tab ${i === idx ? 'active' : ''}" onclick="showVariation(${i})">パターン ${i+1}</button>`
+  ).join('');
+}
+
+function copyCaption() {
+  const text = document.getElementById('result-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'コピーしました！';
+    setTimeout(() => btn.textContent = 'コピーする', 2000);
+  });
+}
+
+// 起動
+renderAccountList();
+</script>
+</body>
+</html>
