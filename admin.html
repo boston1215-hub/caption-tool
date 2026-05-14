@@ -3,385 +3,395 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>設定管理 | asChronos</title>
+<title>管理画面 | asChronos</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #f5f5f5; color: #1a1a1a; }
-
-  .header {
-    background: #850025; padding: 1rem 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  .header { background: #850025; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
   .header h1 { font-size: 16px; font-weight: 600; color: #fff; }
   .header span { font-size: 12px; color: rgba(255,255,255,0.6); }
-
-  .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-
-  .card {
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-    padding: 1.5rem; margin-bottom: 1rem;
-  }
-  .card-title {
-    font-size: 14px; font-weight: 600; color: #850025;
-    margin-bottom: 1rem; padding-bottom: 0.75rem;
-    border-bottom: 1px solid #f0e8e8;
-  }
-
+  .tabs { display: flex; background: #fff; border-bottom: 2px solid #e5e5e5; }
+  .tab { padding: 1rem 2rem; font-size: 14px; font-weight: 500; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.active { color: #850025; border-bottom-color: #850025; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .container { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+  .card-title { font-size: 14px; font-weight: 600; color: #850025; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0e8e8; }
   .field { margin-bottom: 1rem; }
   label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
-  input[type="text"], textarea, select {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid #ddd; border-radius: 6px;
-    background: #fff; color: #1a1a1a;
-    font-size: 14px; font-family: inherit; outline: none;
-    transition: border-color 0.15s;
-  }
-  input:focus, textarea:focus { border-color: #850025; }
-  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
-
-  .search-row { display: flex; gap: 8px; }
-  .search-row input { flex: 1; }
-
-  .btn {
-    padding: 10px 20px; border: none; border-radius: 6px;
-    font-size: 14px; font-family: inherit; font-weight: 500;
-    cursor: pointer; transition: opacity 0.15s;
-  }
+  input[type="text"], textarea, select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #1a1a1a; font-size: 14px; font-family: inherit; outline: none; }
+  input:focus, textarea:focus, select:focus { border-color: #850025; }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+  .row { display: flex; gap: 8px; }
+  .row input { flex: 1; }
+  .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-primary { background: #850025; color: #fff; }
-  .btn-primary:hover { opacity: 0.85; }
   .btn-secondary { background: #f5f5f5; color: #555; border: 1px solid #ddd; }
   .btn-full { width: 100%; padding: 13px; font-size: 15px; }
-
   .status { font-size: 12px; margin-top: 8px; min-height: 18px; }
   .status.success { color: #2c7a4b; }
   .status.error { color: #c00; }
-
-  .result-url {
-    background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px;
-    padding: 10px 12px; font-size: 12px; color: #850025;
-    font-family: monospace; word-break: break-all; margin-top: 10px;
-  }
-
-  .copy-btn {
-    margin-top: 8px; width: 100%; padding: 10px;
-    background: #f5f5f5; color: #555; border: 1px solid #ddd;
-    border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit;
-  }
-
-  .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-  .tag {
-    padding: 6px 12px; border: 1px solid #ddd; border-radius: 99px;
-    font-size: 12px; cursor: pointer; transition: all 0.15s; background: #fff;
-  }
-  .tag.active { border-color: #850025; background: #fff0f0; color: #850025; font-weight: 500; }
-
+  .result-url { background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #850025; font-family: monospace; word-break: break-all; margin-top: 10px; }
+  .copy-btn { margin-top: 8px; width: 100%; padding: 10px; background: #f5f5f5; color: #555; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit; }
   .section-sep { height: 1px; background: #f0e8e8; margin: 1rem 0; }
-
-  .info-box {
-    background: #fff8f0; border: 1px solid #f0d080; border-radius: 6px;
-    padding: 12px; font-size: 12px; color: #8a6800; margin-bottom: 1rem;
-    line-height: 1.6;
-  }
+  .info-box { background: #fff8f0; border: 1px solid #f0d080; border-radius: 6px; padding: 12px; font-size: 12px; color: #8a6800; margin-bottom: 1rem; line-height: 1.6; }
+  .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .list-count { font-size: 13px; color: #888; }
+  .refresh-btn { padding: 7px 14px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .account-list { display: flex; flex-direction: column; gap: 10px; }
+  .account-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; }
+  .account-avatar { width: 42px; height: 42px; border-radius: 50%; background: #850025; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; }
+  .account-info { flex: 1; min-width: 0; }
+  .account-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+  .account-meta { font-size: 11px; color: #888; margin-top: 2px; }
+  .account-id { font-size: 11px; color: #850025; font-family: monospace; background: #fff0f0; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+  .account-via { font-size: 11px; color: #2c7a4b; background: #f0fff4; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; margin-left: 4px; }
+  .account-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; border: 1px solid #ddd; background: #fff; color: #555; }
+  .action-btn.edit { border-color: #850025; color: #850025; }
+  .action-btn.del { border-color: #fcc; color: #c00; }
+  .empty-state { text-align: center; padding: 3rem; color: #888; font-size: 14px; }
+  .loading { text-align: center; padding: 2rem; color: #888; font-size: 13px; }
+  .search-filter { margin-bottom: 1rem; }
+  .search-filter input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; font-family: inherit; outline: none; width: 100%; }
+  .search-filter input:focus { border-color: #850025; }
+  .auto-badge { background: #e8f5e9; color: #2c7a4b; font-size: 10px; padding: 2px 6px; border-radius: 99px; margin-left: 4px; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>⚙️ キャプションツール 設定管理</h1>
-  <span>asChronos 管理用</span>
+<!-- パスワード画面 -->
+<div id="pw-screen" style="position:fixed;inset:0;background:#850025;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;">
+  <div style="text-align:center;color:#fff;margin-bottom:2rem;">
+    <div style="font-size:13px;letter-spacing:0.2em;opacity:0.7;margin-bottom:0.5rem">asChronos</div>
+    <div style="font-size:22px;font-weight:600;">管理画面</div>
+  </div>
+  <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:2rem;width:280px;">
+    <input type="password" id="pw-input" placeholder="パスワードを入力"
+      style="width:100%;padding:12px;border:none;border-radius:6px;font-size:15px;margin-bottom:10px;outline:none;"
+      onkeydown="if(event.key==='Enter')checkPW()">
+    <button onclick="checkPW()"
+      style="width:100%;padding:12px;background:#fff;color:#850025;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;">
+      ログイン
+    </button>
+    <div id="pw-error" style="color:rgba(255,255,255,0.7);font-size:12px;text-align:center;margin-top:8px;min-height:18px;"></div>
+  </div>
 </div>
 
-<div class="container">
+<div id="main-content" style="display:none">
+<div class="header">
+  <h1>⚙️ キャプションツール 管理画面</h1>
+  <span>asChronos スタッフ専用</span>
+</div>
 
-  <div class="info-box">
-    💡 このページはasChronosスタッフ専用の管理画面です。お客様のツール設定を作成・編集できます。
-  </div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('list')">📋 アカウント一覧</div>
+  <div class="tab" onclick="switchTab('edit')">✏️ 設定編集</div>
+  <div class="tab" onclick="switchTab('new')">➕ 新規作成</div>
+</div>
 
-  <!-- ID検索 -->
-  <div class="card">
-    <div class="card-title">既存の設定を編集する</div>
-    <div class="field">
-      <label>設定ID（URLの ?id= 以降の文字列）</label>
-      <div class="search-row">
-        <input type="text" id="search-id" placeholder="例：abc123">
-        <button class="btn btn-primary" onclick="loadConfig()">読み込む</button>
-      </div>
-      <div class="status" id="search-status"></div>
+<!-- 一覧 -->
+<div class="tab-content active" id="tab-list">
+  <div class="container">
+    <div class="list-header">
+      <div class="list-count" id="list-count">読み込み中...</div>
+      <button class="refresh-btn" onclick="loadIndex()">🔄 更新</button>
+    </div>
+    <div class="search-filter">
+      <input type="text" id="search-box" placeholder="お店名・業種・経由で検索..." oninput="filterList()">
+    </div>
+    <div class="account-list" id="account-list">
+      <div class="loading">読み込み中...</div>
     </div>
   </div>
+</div>
 
-  <!-- 設定フォーム -->
-  <div class="card">
-    <div class="card-title">設定内容</div>
-
-    <div class="field">
-      <label>お店・会社名</label>
-      <input type="text" id="name" placeholder="例：Est!prossimo">
-    </div>
-
-    <div class="field">
-      <label>業種</label>
-      <select id="industry">
-        <option value="">選択してください</option>
-        <option value="restaurant">飲食店・カフェ・バー</option>
-        <option value="clinic">クリニック・歯科・医療</option>
-        <option value="realestate">不動産・建設</option>
-        <option value="legal">士業（法律・税務）</option>
-        <option value="outdoor">釣り・アウトドア</option>
-        <option value="beauty">美容・サロン</option>
-        <option value="lifestyle">ライフスタイル・個人</option>
-        <option value="other">その他</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>WebサイトURL</label>
-      <input type="text" id="website" placeholder="https://www.example.com">
-    </div>
-
-    <div class="field">
-      <label>Instagram URL</label>
-      <input type="text" id="instagram" placeholder="https://www.instagram.com/アカウント名">
-    </div>
-
-    <div class="section-sep"></div>
-
-    <div class="field">
-      <label>キャッチコピー・売り</label>
-      <input type="text" id="catchcopy" placeholder="例：千産千消がテーマの千葉のイタリアン">
-    </div>
-
-    <div class="field">
-      <label>特徴・こだわり（プロンプトの核になる部分）</label>
-      <textarea id="features" placeholder="例：契約農家から直送の野菜、旬の魚介を使用。グラスワインは常時20種以上。食べログ百名店選出。"></textarea>
-    </div>
-
-    <div class="field">
-      <label>必須ハッシュタグ</label>
-      <input type="text" id="hashtags" placeholder="#千葉グルメ #イタリアン #エストプロッシモ">
-    </div>
-
-    <div class="field">
-      <label>投稿カテゴリ（複数選択）</label>
-      <div class="tag-grid" id="cat-grid">
-        <span class="tag" onclick="toggleTag(this)" data-val="料理・ドリンク">料理・ドリンク</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="物件・案件紹介">物件・案件紹介</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="スタッフ紹介">スタッフ紹介</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="季節のお知らせ">季節のお知らせ</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="実績・事例紹介">実績・事例紹介</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="釣果・アウトドア報告">釣果・アウトドア報告</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="日常・裏側">日常・裏側</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="イベント・お知らせ">イベント・お知らせ</span>
+<!-- 編集 -->
+<div class="tab-content" id="tab-edit">
+  <div class="container">
+    <div class="info-box">💡 設定IDを入力して既存のアカウント設定を編集できます。一覧の「編集」ボタンからも開けます。</div>
+    <div class="card">
+      <div class="card-title">設定を読み込む</div>
+      <div class="field">
+        <label>設定ID</label>
+        <div class="row">
+          <input type="text" id="edit-id" placeholder="例：abc123">
+          <button class="btn btn-primary" onclick="loadConfig()">読み込む</button>
+        </div>
+        <div class="status" id="search-status"></div>
       </div>
     </div>
-
-    <div class="section-sep"></div>
-
-    <div class="field">
-      <label>トーン（複数選択可）</label>
-      <div class="tag-grid" id="tone-grid">
-        <span class="tag" onclick="toggleTag(this)" data-val="カジュアル・親しみやすく">カジュアル</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="上品・丁寧に">上品・丁寧</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="食欲・購買欲をそそる表現で">食欲・購買欲</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="ストーリー・背景を大切にして">ストーリー風</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="プロフェッショナルで信頼感のある">プロフェッショナル</span>
-        <span class="tag" onclick="toggleTag(this)" data-val="さらっとシンプルに短く">シンプル・短め</span>
+    <div class="card">
+      <div class="card-title">設定内容</div>
+      <div class="field"><label>お店・会社名</label><input type="text" id="edit-name" placeholder="例：Est!prossimo"></div>
+      <div class="field"><label>業種</label>
+        <select id="edit-industry">
+          <option value="">選択してください</option>
+          <option value="restaurant">飲食店・カフェ・バー</option>
+          <option value="clinic">クリニック・歯科・医療</option>
+          <option value="realestate">不動産・建設</option>
+          <option value="legal">士業（法律・税務）</option>
+          <option value="outdoor">釣り・アウトドア</option>
+          <option value="beauty">美容・サロン</option>
+          <option value="lifestyle">ライフスタイル・個人</option>
+          <option value="other">その他</option>
+        </select>
       </div>
+      <div class="field"><label>WebサイトURL</label><input type="text" id="edit-website" placeholder="https://www.example.com"></div>
+      <div class="field"><label>Instagram URL</label><input type="text" id="edit-instagram" placeholder="https://www.instagram.com/アカウント名"></div>
+      <div class="section-sep"></div>
+      <div class="field"><label>キャッチコピー・売り</label><input type="text" id="edit-catchcopy" placeholder="例：千産千消がテーマの千葉のイタリアン"></div>
+      <div class="field"><label>特徴・こだわり</label><textarea id="edit-features" placeholder="例：契約農家から直送の野菜、旬の魚介を使用。グラスワイン常時20種以上。"></textarea></div>
+      <div class="field"><label>必須ハッシュタグ</label><input type="text" id="edit-hashtags" placeholder="#千葉グルメ #イタリアン"></div>
+      <div class="field"><label>経由・備考（管理用メモ）</label><input type="text" id="edit-via" placeholder="例：エスト経由・さわやか信金・妹サロン仲間"></div>
+      <div class="field"><label>特記事項・追加指示</label><textarea id="edit-notes" placeholder="例：ワインのペアリング提案を必ず含める など" style="min-height:70px"></textarea></div>
+      <div class="status" id="save-status"></div>
+      <button class="btn btn-primary btn-full" id="save-btn" onclick="saveConfig()" style="margin-top:1rem">保存する</button>
     </div>
-
-    <div class="field">
-      <label>対応言語</label>
-      <div class="tag-grid" id="lang-grid">
-        <span class="tag active" onclick="selectLang(this)" data-val="ja">日本語</span>
-        <span class="tag" onclick="selectLang(this)" data-val="en">英語</span>
-        <span class="tag" onclick="selectLang(this)" data-val="ko">韓国語</span>
-        <span class="tag" onclick="selectLang(this)" data-val="ja_en">日本語＋英語</span>
-        <span class="tag" onclick="selectLang(this)" data-val="ja_ko">日本語＋韓国語</span>
-        <span class="tag" onclick="selectLang(this)" data-val="ja_en_ko">日英韓すべて</span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>特記事項・追加指示</label>
-      <textarea id="notes" placeholder="例：ワインのペアリング提案を必ず含める、投稿の入口となる状況描写を必ず入れる など"></textarea>
-    </div>
-
-    <div class="status" id="save-status"></div>
-    <button class="btn btn-primary btn-full" id="save-btn" onclick="saveConfig()" style="margin-top:1rem">
-      保存して専用URLを発行する
-    </button>
-  </div>
-
-  <!-- 発行済みURL -->
-  <div class="card" id="url-card" style="display:none">
-    <div class="card-title">発行済みURL</div>
-    <div class="result-url" id="result-url"></div>
-    <button class="copy-btn" onclick="copyURL()">URLをコピーする</button>
-    <div style="margin-top:10px; display:flex; gap:8px;">
-      <button class="btn btn-secondary" style="flex:1" onclick="openTool()">ツールを確認する</button>
-      <button class="btn btn-secondary" style="flex:1" onclick="newConfig()">新規作成</button>
+    <div class="card" id="edit-url-card" style="display:none">
+      <div class="card-title">発行済みURL</div>
+      <div class="result-url" id="edit-result-url"></div>
+      <button class="copy-btn" onclick="copyText('edit-result-url', this)">URLをコピーする</button>
     </div>
   </div>
+</div>
 
+<!-- 新規作成 -->
+<div class="tab-content" id="tab-new">
+  <div class="container">
+    <div class="info-box">💡 新しいお客様のセットアップをここから行えます。WebサイトURLを入れると情報を自動取得します。</div>
+    <div class="card">
+      <div class="card-title">基本情報</div>
+      <div class="field"><label>お店・会社名 *</label><input type="text" id="new-name" placeholder="例：○○クリニック"></div>
+      <div class="field"><label>業種 *</label>
+        <select id="new-industry">
+          <option value="">選択してください</option>
+          <option value="restaurant">飲食店・カフェ・バー</option>
+          <option value="clinic">クリニック・歯科・医療</option>
+          <option value="realestate">不動産・建設</option>
+          <option value="legal">士業（法律・税務）</option>
+          <option value="outdoor">釣り・アウトドア</option>
+          <option value="beauty">美容・サロン</option>
+          <option value="lifestyle">ライフスタイル・個人</option>
+          <option value="other">その他</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>WebサイトURL（自動取得）</label>
+        <div class="row">
+          <input type="text" id="new-website" placeholder="https://www.example.com">
+          <button class="btn btn-primary" onclick="fetchWebsite()">自動取得</button>
+        </div>
+        <div class="status" id="fetch-status"></div>
+      </div>
+      <div class="field"><label>Instagram URL</label><input type="text" id="new-instagram" placeholder="https://www.instagram.com/アカウント名"></div>
+      <div class="field"><label>経由・備考（管理用メモ）</label><input type="text" id="new-via" placeholder="例：エスト経由・さわやか信金・妹サロン仲間"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">コンセプト・スタイル</div>
+      <div class="field"><label>キャッチコピー・売り <span id="auto1"></span></label><input type="text" id="new-catchcopy" placeholder="例：千産千消がテーマの千葉のイタリアン"></div>
+      <div class="field"><label>特徴・こだわり <span id="auto2"></span></label><textarea id="new-features" placeholder="例：契約農家から直送の野菜、旬の魚介を使用。"></textarea></div>
+      <div class="field"><label>必須ハッシュタグ</label><input type="text" id="new-hashtags" placeholder="#千葉グルメ #イタリアン"></div>
+      <div class="field"><label>特記事項・追加指示</label><textarea id="new-notes" placeholder="例：ワインのペアリング提案を必ず含める など" style="min-height:70px"></textarea></div>
+    </div>
+    <div class="status" id="new-save-status"></div>
+    <button class="btn btn-primary btn-full" id="new-save-btn" onclick="saveNew()">作成してURLを発行する</button>
+    <div class="card" id="new-url-card" style="display:none; margin-top:1rem">
+      <div class="card-title">🎉 専用URLが発行されました</div>
+      <div class="result-url" id="new-result-url"></div>
+      <button class="copy-btn" onclick="copyText('new-result-url', this)">URLをコピーする</button>
+      <div style="margin-top:10px; display:flex; gap:8px;">
+        <button class="btn btn-secondary" style="flex:1" onclick="window.open(document.getElementById('new-result-url').textContent,'_blank')">確認する</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="clearNew()">新規作成</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 const PROXY = 'https://caption-proxy.boston1215.workers.dev';
-let currentId = null;
-let selectedLang = 'ja';
+let allAccounts = [];
+let currentEditId = null;
 
-function toggleTag(el) {
-  el.classList.toggle('active');
-}
+const industryLabel = { restaurant:'飲食店', clinic:'クリニック・医療', realestate:'不動産・建設', legal:'士業', outdoor:'釣り・アウトドア', beauty:'美容・サロン', lifestyle:'ライフスタイル', other:'その他' };
 
-function selectLang(el) {
-  document.querySelectorAll('#lang-grid .tag').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  selectedLang = el.dataset.val;
-}
-
-function getSelectedTags(gridId) {
-  return Array.from(document.querySelectorAll(`#${gridId} .tag.active`)).map(t => t.dataset.val);
-}
-
-function setSelectedTags(gridId, values) {
-  document.querySelectorAll(`#${gridId} .tag`).forEach(t => {
-    t.classList.toggle('active', values.includes(t.dataset.val));
+function switchTab(tab) {
+  ['list','edit','new'].forEach((t,i) => {
+    document.querySelectorAll('.tab')[i].classList.toggle('active', t===tab);
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
   });
+  if (tab==='list') loadIndex();
+}
+
+async function loadIndex() {
+  document.getElementById('account-list').innerHTML = '<div class="loading">読み込み中...</div>';
+  try {
+    const res = await fetch(PROXY+'/get-index');
+    allAccounts = await res.json();
+    renderList(allAccounts);
+  } catch(e) {
+    document.getElementById('account-list').innerHTML = '<div class="empty-state">読み込みに失敗しました</div>';
+  }
+}
+
+function renderList(accounts) {
+  document.getElementById('list-count').textContent = accounts.length + '件のアカウント';
+  if (!accounts.length) { document.getElementById('account-list').innerHTML = '<div class="empty-state">まだアカウントがありません</div>'; return; }
+  document.getElementById('account-list').innerHTML = accounts.map(acc => `
+    <div class="account-card">
+      <div class="account-avatar">${(acc.name||'?').charAt(0)}</div>
+      <div class="account-info">
+        <div class="account-name">${acc.name||'未設定'}</div>
+        <div class="account-meta">${industryLabel[acc.industry]||acc.industry||''}　${formatDate(acc.updatedAt)}</div>
+        <div><span class="account-id">ID: ${acc.id}</span>${acc.via?`<span class="account-via">📍 ${acc.via}</span>`:''}</div>
+      </div>
+      <div class="account-actions">
+        <button class="action-btn" onclick="copyAccountURL('${acc.id}')">URL</button>
+        <button class="action-btn edit" onclick="openEdit('${acc.id}')">編集</button>
+        <button class="action-btn del" onclick="deleteAccount('${acc.id}','${acc.name}')">削除</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterList() {
+  const q = document.getElementById('search-box').value.toLowerCase();
+  renderList(q ? allAccounts.filter(a => (a.name||'').toLowerCase().includes(q)||(a.industry||'').toLowerCase().includes(q)||(a.via||'').toLowerCase().includes(q)) : allAccounts);
+}
+
+function formatDate(iso) { if(!iso) return ''; const d=new Date(iso); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; }
+
+function copyAccountURL(id) {
+  const url = `https://boston1215-hub.github.io/caption-tool/?id=${id}`;
+  navigator.clipboard.writeText(url).then(() => alert('コピーしました！\n'+url));
+}
+
+function openEdit(id) {
+  document.getElementById('edit-id').value = id;
+  switchTab('edit');
+  loadConfig();
+}
+
+async function deleteAccount(id, name) {
+  if (!confirm(`「${name}」を削除しますか？`)) return;
+  try {
+    await fetch(PROXY+'/delete-config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id}) });
+    loadIndex();
+  } catch(e) { alert('削除に失敗しました'); }
 }
 
 async function loadConfig() {
-  const id = document.getElementById('search-id').value.trim();
-  if (!id) { showStatus('search-status', 'IDを入力してください', 'error'); return; }
-
-  showStatus('search-status', '読み込み中...', '');
+  const id = document.getElementById('edit-id').value.trim();
+  if (!id) { showStatus('search-status','IDを入力してください','error'); return; }
+  showStatus('search-status','読み込み中...','');
   try {
-    const res = await fetch(`${PROXY}/get-config?id=${id}`);
+    const res = await fetch(PROXY+'/get-config?id='+id);
     const config = await res.json();
-    if (config.error) { showStatus('search-status', '設定が見つかりませんでした', 'error'); return; }
-
-    // フォームに反映
-    document.getElementById('name').value = config.n || '';
-    document.getElementById('industry').value = config.i || '';
-    document.getElementById('website').value = config.w || '';
-    document.getElementById('instagram').value = config.ig || '';
-    document.getElementById('catchcopy').value = config.c || '';
-    document.getElementById('features').value = config.f || '';
-    document.getElementById('hashtags').value = config.h || '';
-    document.getElementById('notes').value = config.note || '';
-
-    setSelectedTags('cat-grid', config.cat || []);
-    setSelectedTags('tone-grid', config.tones || []);
-
-    // 言語
-    selectedLang = config.l || 'ja';
-    document.querySelectorAll('#lang-grid .tag').forEach(t => {
-      t.classList.toggle('active', t.dataset.val === selectedLang);
+    if (config.error) { showStatus('search-status','見つかりませんでした','error'); return; }
+    ['name','industry','website','instagram','catchcopy','features','hashtags','via','notes'].forEach(k => {
+      const el = document.getElementById('edit-'+k);
+      if (el) el.value = config[{name:'n',industry:'i',website:'w',instagram:'ig',catchcopy:'c',features:'f',hashtags:'h',via:'via',notes:'note'}[k]] || '';
     });
-
-    currentId = id;
-    showStatus('search-status', '✓ 設定を読み込みました', 'success');
-
-    // URLを表示
-    document.getElementById('result-url').textContent = `https://boston1215-hub.github.io/caption-tool/?id=${id}`;
-    document.getElementById('url-card').style.display = 'block';
-
-  } catch(e) {
-    showStatus('search-status', 'エラー：' + e.message, 'error');
-  }
+    currentEditId = id;
+    document.getElementById('edit-result-url').textContent = `https://boston1215-hub.github.io/caption-tool/?id=${id}`;
+    document.getElementById('edit-url-card').style.display = 'block';
+    showStatus('search-status','✓ 読み込みました','success');
+  } catch(e) { showStatus('search-status','エラー：'+e.message,'error'); }
 }
 
 async function saveConfig() {
-  const config = {
-    n: document.getElementById('name').value.trim(),
-    i: document.getElementById('industry').value,
-    w: document.getElementById('website').value.trim(),
-    ig: document.getElementById('instagram').value.trim(),
-    c: document.getElementById('catchcopy').value.trim(),
-    f: document.getElementById('features').value.trim(),
-    h: document.getElementById('hashtags').value.trim(),
-    cat: getSelectedTags('cat-grid'),
-    tones: getSelectedTags('tone-grid'),
-    l: selectedLang,
-    note: document.getElementById('notes').value.trim()
-  };
-
-  if (!config.n) { showStatus('save-status', 'お店名を入力してください', 'error'); return; }
-
+  const name = document.getElementById('edit-name').value.trim();
+  if (!name) { showStatus('save-status','お店名を入力してください','error'); return; }
   const btn = document.getElementById('save-btn');
-  btn.disabled = true;
-  btn.textContent = '保存中...';
-  showStatus('save-status', '', '');
-
+  btn.disabled=true; btn.textContent='保存中...';
   try {
-    // 既存IDがあれば上書き、なければ新規
-    const endpoint = currentId
-      ? `${PROXY}/save-config?id=${currentId}`
-      : `${PROXY}/save-config`;
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...config, _id: currentId })
-    });
+    const config = { n:name, i:document.getElementById('edit-industry').value, w:document.getElementById('edit-website').value.trim(), ig:document.getElementById('edit-instagram').value.trim(), c:document.getElementById('edit-catchcopy').value.trim(), f:document.getElementById('edit-features').value.trim(), h:document.getElementById('edit-hashtags').value.trim(), via:document.getElementById('edit-via').value.trim(), note:document.getElementById('edit-notes').value.trim(), _id:currentEditId };
+    const res = await fetch(PROXY+'/save-config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(config) });
     const data = await res.json();
+    if (data.id) { currentEditId=data.id; document.getElementById('edit-result-url').textContent=`https://boston1215-hub.github.io/caption-tool/?id=${data.id}`; document.getElementById('edit-url-card').style.display='block'; showStatus('save-status','✓ 保存しました','success'); }
+    else showStatus('save-status','保存に失敗しました','error');
+  } catch(e) { showStatus('save-status','エラー：'+e.message,'error'); }
+  btn.disabled=false; btn.textContent='保存する';
+}
 
-    if (data.id) {
-      currentId = data.id;
-      const url = `https://boston1215-hub.github.io/caption-tool/?id=${data.id}`;
-      document.getElementById('result-url').textContent = url;
-      document.getElementById('url-card').style.display = 'block';
-      showStatus('save-status', '✓ 保存しました', 'success');
-    } else {
-      showStatus('save-status', '保存に失敗しました', 'error');
+async function fetchWebsite() {
+  const url = document.getElementById('new-website').value.trim();
+  if (!url) { showStatus('fetch-status','URLを入力してください','error'); return; }
+  showStatus('fetch-status','取得中...','');
+  try {
+    const res = await fetch(PROXY, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:800, system:'WebサイトからInstagram投稿に必要な情報を抽出してJSONのみ返してください：{"catchcopy":"キャッチコピー（1文）","features":"特徴・こだわり（2〜3文）","hashtags":"#タグ1 #タグ2 #タグ3"}', messages:[{role:'user',content:'サイト情報を分析：'+url}] }) });
+    const data = await res.json();
+    const text = data.content.map(b=>b.text||'').join('');
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      const p = JSON.parse(match[0]);
+      if (p.catchcopy) { document.getElementById('new-catchcopy').value=p.catchcopy; document.getElementById('auto1').innerHTML='<span class="auto-badge">自動入力</span>'; }
+      if (p.features) { document.getElementById('new-features').value=p.features; document.getElementById('auto2').innerHTML='<span class="auto-badge">自動入力</span>'; }
+      if (p.hashtags) document.getElementById('new-hashtags').value=p.hashtags;
+      showStatus('fetch-status','✓ 情報を取得しました','success');
     }
-  } catch(e) {
-    showStatus('save-status', 'エラー：' + e.message, 'error');
-  }
-
-  btn.disabled = false;
-  btn.textContent = '保存して専用URLを発行する';
+  } catch(e) { showStatus('fetch-status','取得できませんでした','error'); }
 }
 
-function copyURL() {
-  const url = document.getElementById('result-url').textContent;
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.querySelector('.copy-btn');
-    btn.textContent = 'コピーしました！';
-    setTimeout(() => btn.textContent = 'URLをコピーする', 2000);
-  });
+async function saveNew() {
+  const name = document.getElementById('new-name').value.trim();
+  const industry = document.getElementById('new-industry').value;
+  if (!name) { showStatus('new-save-status','お店名を入力してください','error'); return; }
+  if (!industry) { showStatus('new-save-status','業種を選択してください','error'); return; }
+  const btn = document.getElementById('new-save-btn');
+  btn.disabled=true; btn.textContent='作成中...';
+  try {
+    const config = { n:name, i:industry, w:document.getElementById('new-website').value.trim(), ig:document.getElementById('new-instagram').value.trim(), c:document.getElementById('new-catchcopy').value.trim(), f:document.getElementById('new-features').value.trim(), h:document.getElementById('new-hashtags').value.trim(), via:document.getElementById('new-via').value.trim(), note:document.getElementById('new-notes').value.trim() };
+    const res = await fetch(PROXY+'/save-config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(config) });
+    const data = await res.json();
+    if (data.id) { document.getElementById('new-result-url').textContent=`https://boston1215-hub.github.io/caption-tool/?id=${data.id}`; document.getElementById('new-url-card').style.display='block'; showStatus('new-save-status','✓ 作成しました！','success'); }
+    else showStatus('new-save-status','作成に失敗しました','error');
+  } catch(e) { showStatus('new-save-status','エラー：'+e.message,'error'); }
+  btn.disabled=false; btn.textContent='作成してURLを発行する';
 }
 
-function openTool() {
-  const url = document.getElementById('result-url').textContent;
-  window.open(url, '_blank');
+function clearNew() {
+  ['new-name','new-website','new-instagram','new-catchcopy','new-features','new-hashtags','new-via','new-notes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('new-industry').value='';
+  document.getElementById('new-url-card').style.display='none';
+  document.getElementById('auto1').innerHTML=''; document.getElementById('auto2').innerHTML='';
+  showStatus('new-save-status','',''); showStatus('fetch-status','','');
 }
 
-function newConfig() {
-  currentId = null;
-  document.getElementById('search-id').value = '';
-  document.getElementById('name').value = '';
-  document.getElementById('industry').value = '';
-  document.getElementById('website').value = '';
-  document.getElementById('instagram').value = '';
-  document.getElementById('catchcopy').value = '';
-  document.getElementById('features').value = '';
-  document.getElementById('hashtags').value = '';
-  document.getElementById('notes').value = '';
-  document.querySelectorAll('#cat-grid .tag, #tone-grid .tag').forEach(t => t.classList.remove('active'));
-  selectedLang = 'ja';
-  document.querySelectorAll('#lang-grid .tag').forEach((t, i) => t.classList.toggle('active', i === 0));
-  document.getElementById('url-card').style.display = 'none';
-  showStatus('search-status', '', '');
-  showStatus('save-status', '', '');
+function copyText(elId, btn) {
+  navigator.clipboard.writeText(document.getElementById(elId).textContent).then(() => { btn.textContent='コピーしました！'; setTimeout(()=>btn.textContent='URLをコピーする',2000); });
 }
 
 function showStatus(id, msg, type) {
   const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = 'status' + (type ? ' ' + type : '');
+  if (el) { el.textContent=msg; el.className='status'+(type?' '+type:''); }
+}
+
+loadIndex();
+
+// パスワード認証
+const ADMIN_PW = 'aschronos2026';
+
+function checkPW() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('pw-screen').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    sessionStorage.setItem('admin_auth', '1');
+  } else {
+    document.getElementById('pw-error').textContent = 'パスワードが違います';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+// セッション中は認証済みならスキップ
+if (sessionStorage.getItem('admin_auth') === '1') {
+  document.getElementById('pw-screen').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
 }
 </script>
+</div>
 </body>
 </html>
