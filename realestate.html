@@ -142,22 +142,31 @@
         <input type="text" id="prop-name" placeholder="例：シーサイドコート幕張">
       </div>
       <div class="field">
-        <label>エリア</label>
-        <select id="prop-area">
-          <option value="千葉市中央区">千葉市中央区</option>
-          <option value="千葉市花見川区">千葉市花見川区</option>
-          <option value="千葉市稲毛区">千葉市稲毛区</option>
-          <option value="千葉市若葉区">千葉市若葉区</option>
-          <option value="千葉市緑区">千葉市緑区</option>
-          <option value="千葉市美浜区">千葉市美浜区</option>
-          <option value="船橋市">船橋市</option>
-          <option value="市川市">市川市</option>
-          <option value="松戸市">松戸市</option>
-          <option value="柏市">柏市</option>
-          <option value="習志野市">習志野市</option>
-          <option value="八千代市">八千代市</option>
-          <option value="その他千葉県内">その他千葉県内</option>
-        </select>
+        <label>エリア区分</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <button type="button" class="toggle-btn active" id="area-btn-chiba" onclick="switchArea('chiba')">🏙 千葉エリア</button>
+          <button type="button" class="toggle-btn" id="area-btn-other" onclick="switchArea('other')">🗼 東京・その他</button>
+        </div>
+        <div id="area-chiba">
+          <select id="prop-area">
+            <option value="千葉市中央区">千葉市中央区</option>
+            <option value="千葉市花見川区">千葉市花見川区</option>
+            <option value="千葉市稲毛区">千葉市稲毛区</option>
+            <option value="千葉市若葉区">千葉市若葉区</option>
+            <option value="千葉市緑区">千葉市緑区</option>
+            <option value="千葉市美浜区">千葉市美浜区</option>
+            <option value="船橋市">船橋市</option>
+            <option value="市川市">市川市</option>
+            <option value="松戸市">松戸市</option>
+            <option value="柏市">柏市</option>
+            <option value="習志野市">習志野市</option>
+            <option value="八千代市">八千代市</option>
+            <option value="その他千葉県内">その他千葉県内</option>
+          </select>
+        </div>
+        <div id="area-other" style="display:none;">
+          <input type="text" id="prop-area-other" placeholder="例：東京都渋谷区、神奈川県横浜市西区">
+        </div>
       </div>
     </div>
     <div class="field">
@@ -196,22 +205,6 @@
           <label>路線①</label>
           <select id="train-line1">
             <option value="">選択してください</option>
-            <optgroup label="JR">
-              <option>JR総武線</option>
-              <option>JR京葉線</option>
-              <option>JR外房線</option>
-              <option>JR内房線</option>
-              <option>JR成田線</option>
-              <option>JR常磐線</option>
-            </optgroup>
-            <optgroup label="私鉄・その他">
-              <option>千葉都市モノレール</option>
-              <option>新京成線</option>
-              <option>東葉高速線</option>
-              <option>京成本線</option>
-              <option>京成千葉線</option>
-              <option>東武野田線</option>
-            </optgroup>
           </select>
         </div>
         <div class="field">
@@ -228,22 +221,6 @@
           <label>路線②（任意）</label>
           <select id="train-line2">
             <option value="">なし</option>
-            <optgroup label="JR">
-              <option>JR総武線</option>
-              <option>JR京葉線</option>
-              <option>JR外房線</option>
-              <option>JR内房線</option>
-              <option>JR成田線</option>
-              <option>JR常磐線</option>
-            </optgroup>
-            <optgroup label="私鉄・その他">
-              <option>千葉都市モノレール</option>
-              <option>新京成線</option>
-              <option>東葉高速線</option>
-              <option>京成本線</option>
-              <option>京成千葉線</option>
-              <option>東武野田線</option>
-            </optgroup>
           </select>
         </div>
         <div class="field">
@@ -284,6 +261,31 @@
       </div>
       <div class="hint">※ 電車も利用できる場合は補足欄に記載してください</div>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🚗 車・ICアクセス（任意）</div>
+    <div class="row2">
+      <div class="field">
+        <label>IC名①</label>
+        <input type="text" id="ic-name1" placeholder="例：湾岸習志野IC">
+      </div>
+      <div class="field">
+        <label>車で約（分）</label>
+        <input type="text" id="ic-time1" placeholder="例：5">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>IC名②（任意）</label>
+        <input type="text" id="ic-name2" placeholder="例：千葉北IC">
+      </div>
+      <div class="field">
+        <label>車で約（分）</label>
+        <input type="text" id="ic-time2" placeholder="例：10">
+      </div>
+    </div>
+    <div class="hint">車通勤・ドライブ派の方へのアピールに有効です</div>
   </div>
 
   <div class="card">
@@ -379,6 +381,65 @@
     document.getElementById('panel-' + type).classList.add('show');
   }
 
+  const LINES_CHIBA = {
+    'JR': ['JR総武線','JR京葉線','JR外房線','JR内房線','JR成田線','JR常磐線'],
+    '私鉄・その他': ['千葉都市モノレール','新京成線','東葉高速線','京成本線','京成千葉線','東武野田線']
+  };
+  const LINES_TOKYO = {
+    'JR': ['JR山手線','JR中央線','JR総武線','JR京浜東北線','JR埼京線','JR横須賀線','JR常磐線','JR京葉線','JR南武線'],
+    '東京メトロ': ['東京メトロ銀座線','東京メトロ丸ノ内線','東京メトロ日比谷線','東京メトロ東西線','東京メトロ千代田線','東京メトロ有楽町線','東京メトロ半蔵門線','東京メトロ南北線','東京メトロ副都心線'],
+    '都営・私鉄': ['都営浅草線','都営三田線','都営新宿線','都営大江戸線','東急東横線','東急目黒線','東急田園都市線','小田急線','京王線','西武池袋線','西武新宿線','東武東上線','東武スカイツリーライン','京急本線','相鉄線']
+  };
+
+  function buildLineOptions(lines, includeNone) {
+    let html = includeNone ? '<option value="">なし</option>' : '<option value="">選択してください</option>';
+    for (const [group, items] of Object.entries(lines)) {
+      html += `<optgroup label="${group}">`;
+      items.forEach(l => { html += `<option>${l}</option>`; });
+      html += '</optgroup>';
+    }
+    return html;
+  }
+
+  function updateLineSelects() {
+    const lines = currentArea === 'chiba' ? LINES_CHIBA : LINES_TOKYO;
+    document.getElementById('train-line1').innerHTML = buildLineOptions(lines, false);
+    document.getElementById('train-line2').innerHTML = buildLineOptions(lines, true);
+  }
+
+  let currentArea = 'chiba';
+
+  function switchArea(type) {
+    currentArea = type;
+    document.getElementById('area-btn-chiba').classList.toggle('active', type === 'chiba');
+    document.getElementById('area-btn-other').classList.toggle('active', type === 'other');
+    document.getElementById('area-chiba').style.display = type === 'chiba' ? 'block' : 'none';
+    document.getElementById('area-other').style.display = type === 'other' ? 'block' : 'none';
+    updateLineSelects();
+  }
+
+  // 初期化
+  updateLineSelects();
+
+  function getAreaText() {
+    if (currentArea === 'chiba') {
+      return document.getElementById('prop-area').value;
+    } else {
+      return document.getElementById('prop-area-other').value.trim() || '東京・その他';
+    }
+  }
+
+  function getICText() {
+    const ic1 = document.getElementById('ic-name1').value.trim();
+    const t1 = document.getElementById('ic-time1').value.trim();
+    const ic2 = document.getElementById('ic-name2').value.trim();
+    const t2 = document.getElementById('ic-time2').value.trim();
+    const parts = [];
+    if (ic1) parts.push(ic1 + (t1 ? '（車で約' + t1 + '分）' : ''));
+    if (ic2) parts.push(ic2 + (t2 ? '（車で約' + t2 + '分）' : ''));
+    return parts.length ? parts.join('、') : 'なし';
+  }
+
   function toggleTag(el) { el.classList.toggle('active'); }
 
   function getFeatures() {
@@ -428,7 +489,7 @@
 
   async function generate() {
     const name = document.getElementById('prop-name').value.trim();
-    const area = document.getElementById('prop-area').value;
+    const area = getAreaText();
     const addr = document.getElementById('prop-addr').value.trim();
     const rent = document.getElementById('prop-rent').value.trim();
     const layout = document.getElementById('prop-layout').value.trim();
@@ -439,6 +500,7 @@
     const extra = document.getElementById('extra').value.trim();
     const features = getFeatures();
     const access = getAccessText();
+    const ic = getICText();
 
     if (!name && !rent && !layout) {
       alert('物件名・賃料・間取りのいずれかを入力してください');
@@ -455,14 +517,24 @@
 賃料：${rent || '未設定'}
 間取り：${layout || '未設定'}
 専有面積：${size || '未設定'}
-アクセス：${access}
+電車アクセス：${access}
+車・ICアクセス：${ic}
 築年数：${age || '未設定'}
 アピールポイント：${features.length ? features.join('、') : 'なし'}
 ターゲット：${target}
 トーン：${tone}
 補足：${extra || 'なし'}`;
 
-    const prompt = `あなたは千葉県エリアに詳しい不動産の優秀なコピーライターです。以下の物件情報をもとに、3種類の紹介文を作成してください。千葉エリアならではの生活利便性（買い物環境・自然・交通アクセス）も積極的に盛り込んでください。
+    const isChiba = currentArea === 'chiba';
+    const areaDesc = isChiba ? '千葉県エリアに詳しい' : '首都圏エリアに詳しい';
+    const areaHint = isChiba
+      ? '千葉エリアならではの生活利便性（買い物環境・自然・交通アクセス）も積極的に盛り込んでください。'
+      : 'そのエリアならではの生活利便性・街の魅力を積極的に盛り込んでください。';
+    const snsHint = isChiba ? '千葉ならではの魅力を入れる' : 'エリアならではの魅力を入れる';
+    const portalHint = isChiba ? '千葉エリアの生活環境も記載' : 'エリアの生活環境も記載';
+    const flyerHint = isChiba ? '千葉らしさを出す' : 'エリアの魅力を出す';
+
+    const prompt = `あなたは${areaDesc}不動産の優秀なコピーライターです。以下の物件情報をもとに、3種類の紹介文を作成してください。${areaHint}車でのアクセス情報（IC）がある場合は、車生活の利便性も必ずアピールしてください。
 
 【厳守事項】
 - 築年数は入力された情報をそのまま正確に使用すること。「新築」「築浅」などの表現は、実際に新築・築浅（概ね築3年以内）の場合のみ使用すること。
@@ -474,9 +546,9 @@ ${propInfo}
 
 以下のJSON形式で返してください（他のテキストは一切含めないこと）：
 {
-  "sns": "Instagram/SNS用の紹介文（絵文字あり、ハッシュタグあり、200〜300文字、テンション高め、千葉ならではの魅力を入れる）",
-  "portal": "SUUMO・ホームズ向けの物件説明文（です・ます調、500文字程度、詳細に、千葉エリアの生活環境も記載）",
-  "flyer": "チラシ・自社サイト向けのコピー（キャッチコピー1行＋説明文200文字程度、千葉らしさを出す）"
+  "sns": "Instagram/SNS用の紹介文（絵文字あり、ハッシュタグあり、200〜300文字、テンション高め、${snsHint}）",
+  "portal": "SUUMO・ホームズ向けの物件説明文（です・ます調、500文字程度、詳細に、${portalHint}）",
+  "flyer": "チラシ・自社サイト向けのコピー（キャッチコピー1行＋説明文200文字程度、${flyerHint}）"
 }`;
 
     try {
