@@ -58,6 +58,9 @@
   .search-filter input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; font-family: inherit; outline: none; width: 100%; }
   .search-filter input:focus { border-color: #850025; }
   .auto-badge { background: #e8f5e9; color: #2c7a4b; font-size: 10px; padding: 2px 6px; border-radius: 99px; margin-left: 4px; }
+  .tone-check-label { display:flex; align-items:center; gap:4px; font-size:13px; font-weight:400; color:#333; background:#f5f5f5; border:1px solid #ddd; border-radius:6px; padding:6px 10px; cursor:pointer; transition: all 0.15s; }
+  .tone-check-label:hover { border-color:#850025; background:#fff0f3; }
+  .tone-check-label input[type=checkbox]:checked + span { color:#850025; font-weight:600; }
 </style>
 </head>
 <body>
@@ -127,24 +130,36 @@
       <div class="card-title">設定内容</div>
       <div class="field"><label>お店・会社名</label><input type="text" id="edit-name" placeholder="例：Est!prossimo"></div>
       <div class="field"><label>業種</label>
-        <select id="edit-industry">
+        <select id="edit-industry" onchange="renderIndustryFields('edit')">
           <option value="">選択してください</option>
-          <option value="restaurant">飲食店・カフェ・バー</option>
-          <option value="clinic">クリニック・歯科・医療</option>
-          <option value="realestate">不動産・建設</option>
-          <option value="legal">士業（法律・税務）</option>
-          <option value="outdoor">釣り・アウトドア</option>
-          <option value="beauty">美容・サロン</option>
-          <option value="lifestyle">ライフスタイル・個人</option>
+          <option value="restaurant">飲食店</option>
+          <option value="outdoor">趣味・アウトドア</option>
+          <option value="beauty">美容＆ヘアサロン</option>
+          <option value="realestate">不動産</option>
+          <option value="construction">建設・土木</option>
+          <option value="culture">カルチャー教室</option>
+          <option value="personal">個人</option>
+          <option value="shop">ショップ</option>
+          <option value="legal">士業</option>
+          <option value="finance">金融・銀行</option>
           <option value="other">その他</option>
+          <option value="clinic">クリニック</option>
         </select>
       </div>
       <div class="field"><label>WebサイトURL</label><input type="text" id="edit-website" placeholder="https://www.example.com"></div>
       <div class="field"><label>Instagram URL</label><input type="text" id="edit-instagram" placeholder="https://www.instagram.com/アカウント名"></div>
       <div class="section-sep"></div>
+      <!-- 業種別フィールド -->
+      <div id="edit-industry-fields"></div>
+      <!-- 共通フィールド -->
       <div class="field"><label>キャッチコピー・売り</label><input type="text" id="edit-catchcopy" placeholder="例：千産千消がテーマの千葉のイタリアン"></div>
       <div class="field"><label>特徴・こだわり</label><textarea id="edit-features" placeholder="例：契約農家から直送の野菜、旬の魚介を使用。グラスワイン常時20種以上。"></textarea></div>
       <div class="field"><label>必須ハッシュタグ</label><input type="text" id="edit-hashtags" placeholder="#千葉グルメ #イタリアン"></div>
+      <!-- 投稿カテゴリ -->
+      <div class="field" id="edit-tones-field" style="display:none">
+        <label>投稿カテゴリ（チェックで選択）</label>
+        <div id="edit-tones-check" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+      </div>
       <div class="field"><label>経由・備考（管理用メモ）</label><input type="text" id="edit-via" placeholder="例：エスト経由・さわやか信金・妹サロン仲間"></div>
       <div class="field"><label>特記事項・追加指示</label><textarea id="edit-notes" placeholder="例：ワインのペアリング提案を必ず含める など" style="min-height:70px"></textarea></div>
       <div class="status" id="save-status"></div>
@@ -164,18 +179,22 @@
     <div class="info-box">💡 新しいお客様のセットアップをここから行えます。WebサイトURLを入れると情報を自動取得します。</div>
     <div class="card">
       <div class="card-title">基本情報</div>
-      <div class="field"><label>お店・会社名 *</label><input type="text" id="new-name" placeholder="例：○○クリニック"></div>
+      <div class="field"><label>お店・会社名 *</label><input type="text" id="new-name" placeholder="例：○○カフェ"></div>
       <div class="field"><label>業種 *</label>
-        <select id="new-industry">
+        <select id="new-industry" onchange="renderIndustryFields('new')">
           <option value="">選択してください</option>
-          <option value="restaurant">飲食店・カフェ・バー</option>
-          <option value="clinic">クリニック・歯科・医療</option>
-          <option value="realestate">不動産・建設</option>
-          <option value="legal">士業（法律・税務）</option>
-          <option value="outdoor">釣り・アウトドア</option>
-          <option value="beauty">美容・サロン</option>
-          <option value="lifestyle">ライフスタイル・個人</option>
+          <option value="restaurant">飲食店</option>
+          <option value="outdoor">趣味・アウトドア</option>
+          <option value="beauty">美容＆ヘアサロン</option>
+          <option value="realestate">不動産</option>
+          <option value="construction">建設・土木</option>
+          <option value="culture">カルチャー教室</option>
+          <option value="personal">個人</option>
+          <option value="shop">ショップ</option>
+          <option value="legal">士業</option>
+          <option value="finance">金融・銀行</option>
           <option value="other">その他</option>
+          <option value="clinic">クリニック</option>
         </select>
       </div>
       <div class="field">
@@ -191,9 +210,17 @@
     </div>
     <div class="card">
       <div class="card-title">コンセプト・スタイル</div>
+      <!-- 業種別フィールド -->
+      <div id="new-industry-fields"></div>
+      <!-- 共通フィールド -->
       <div class="field"><label>キャッチコピー・売り <span id="auto1"></span></label><input type="text" id="new-catchcopy" placeholder="例：千産千消がテーマの千葉のイタリアン"></div>
       <div class="field"><label>特徴・こだわり <span id="auto2"></span></label><textarea id="new-features" placeholder="例：契約農家から直送の野菜、旬の魚介を使用。"></textarea></div>
       <div class="field"><label>必須ハッシュタグ</label><input type="text" id="new-hashtags" placeholder="#千葉グルメ #イタリアン"></div>
+      <!-- 投稿カテゴリ -->
+      <div class="field" id="new-tones-field" style="display:none">
+        <label>投稿カテゴリ（チェックで選択）</label>
+        <div id="new-tones-check" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+      </div>
       <div class="field"><label>特記事項・追加指示</label><textarea id="new-notes" placeholder="例：ワインのペアリング提案を必ず含める など" style="min-height:70px"></textarea></div>
     </div>
     <div class="status" id="new-save-status"></div>
@@ -215,7 +242,106 @@ const PROXY = 'https://caption-proxy.boston1215.workers.dev';
 let allAccounts = [];
 let currentEditId = null;
 
-const industryLabel = { restaurant:'飲食店', clinic:'クリニック・医療', realestate:'不動産・建設', legal:'士業', outdoor:'釣り・アウトドア', beauty:'美容・サロン', lifestyle:'ライフスタイル', other:'その他' };
+const industryLabel = {
+  restaurant:'飲食店', outdoor:'趣味・アウトドア', beauty:'美容＆ヘアサロン',
+  realestate:'不動産', construction:'建設・土木', culture:'カルチャー教室',
+  personal:'個人', shop:'ショップ', legal:'士業', finance:'金融・銀行',
+  other:'その他', clinic:'クリニック'
+};
+
+// ===== 業種別テンプレート定義 =====
+const INDUSTRY_TEMPLATES = {
+  restaurant: {
+    fields: [
+      { id:'genre', label:'料理ジャンル', placeholder:'例：イタリアン、カフェ、居酒屋' },
+      { id:'seats', label:'席数・個室情報', placeholder:'例：全30席、個室あり（最大8名）' },
+      { id:'pairing', label:'ペアリング方針', placeholder:'例：ワインペアリング推奨、ノンアルも充実' },
+    ],
+    tones: ['料理紹介','季節メニュー','ドリンク・ペアリング','スタッフ・舞台裏','お知らせ・イベント']
+  },
+  outdoor: {
+    fields: [
+      { id:'genre', label:'ジャンル', placeholder:'例：ルアー釣り、登山、キャンプ、サーフィン' },
+      { id:'area', label:'活動エリア', placeholder:'例：房総半島、奥多摩、相模湾' },
+      { id:'level', label:'対象レベル', placeholder:'例：初心者〜中級者、ファミリー向け' },
+    ],
+    tones: ['釣果・活動報告','道具・ギア紹介','スポット・フィールド紹介','イベント・釣行募集','豆知識・テクニック']
+  },
+  beauty: {
+    fields: [
+      { id:'menu', label:'得意メニュー', placeholder:'例：ハイライトカラー、トリートメント、まつ毛パーマ' },
+      { id:'target', label:'主な客層', placeholder:'例：20〜40代女性、ファミリー層' },
+      { id:'booking', label:'予約方法', placeholder:'例：ホットペッパー・LINE・電話' },
+    ],
+    tones: ['スタイル・作品紹介','ビフォーアフター','メニュー・キャンペーン','スタッフ紹介','お知らせ・空き情報']
+  },
+  realestate: {
+    fields: [
+      { id:'proptype', label:'取扱い物件タイプ', placeholder:'例：新築戸建て、中古マンション、土地' },
+      { id:'area', label:'対応エリア', placeholder:'例：千葉市・船橋市・市川市' },
+      { id:'strength', label:'強み・特長', placeholder:'例：地元密着30年、住み替え相談無料' },
+    ],
+    tones: ['物件紹介','エリア・街情報','お役立ち知識','成約・お客様の声','お知らせ・イベント']
+  },
+  construction: {
+    fields: [
+      { id:'worktype', label:'工事種別', placeholder:'例：外構工事、リフォーム、新築施工' },
+      { id:'area', label:'施工エリア', placeholder:'例：千葉県全域、茨城県南部' },
+      { id:'experience', label:'実績・創業年数', placeholder:'例：創業30年・施工実績500件以上' },
+    ],
+    tones: ['施工事例','現場レポート','技術・こだわり紹介','お役立ち情報','採用・スタッフ紹介']
+  },
+  culture: {
+    fields: [
+      { id:'genre', label:'教室ジャンル', placeholder:'例：フラワーアレンジメント、書道、料理教室' },
+      { id:'target', label:'対象・レベル', placeholder:'例：初心者歓迎、シニア向け、子ども〜大人' },
+      { id:'trial', label:'体験レッスン', placeholder:'例：毎月第1土曜・¥1,000' },
+    ],
+    tones: ['レッスン紹介','生徒さんの作品','イベント・発表会','体験レッスン募集','教室からのお知らせ']
+  },
+  personal: {
+    fields: [
+      { id:'job', label:'職種・活動内容', placeholder:'例：フリーカメラマン、ライター、アーティスト' },
+      { id:'theme', label:'発信テーマ', placeholder:'例：日々の暮らし、子育て、旅、作品制作' },
+    ],
+    tones: ['日常・ライフスタイル','仕事・活動報告','こだわり・好きなもの','お知らせ・告知','思考・つぶやき']
+  },
+  shop: {
+    fields: [
+      { id:'genre', label:'商品ジャンル', placeholder:'例：セレクト古着、ハンドメイドアクセ、食料品' },
+      { id:'channel', label:'販売チャネル', placeholder:'例：実店舗のみ、BASE・ECあり、マルシェ出店' },
+      { id:'strength', label:'こだわり・強み', placeholder:'例：国内産素材のみ、1点物、作家もの' },
+    ],
+    tones: ['商品・新作紹介','入荷・再入荷情報','コーディネート・使い方','セール・キャンペーン','お店・作家の想い']
+  },
+  legal: {
+    fields: [
+      { id:'field', label:'専門分野', placeholder:'例：相続・遺言、労務、税務申告、登記' },
+      { id:'target', label:'対象クライアント', placeholder:'例：中小企業、個人、スタートアップ' },
+      { id:'consult', label:'相談方法', placeholder:'例：初回無料・ZOOMあり・土日対応可' },
+    ],
+    tones: ['豆知識・法律解説','事例・よくあるご相談','Q&A','セミナー・イベント','事務所からのお知らせ']
+  },
+  finance: {
+    fields: [
+      { id:'area', label:'活動エリア・地域名', placeholder:'例：千葉市中央区・稲毛区・美浜区' },
+      { id:'service', label:'得意な融資・相談分野', placeholder:'例：創業融資、事業承継、住宅ローン相談' },
+      { id:'community', label:'地域活動・イベント参加', placeholder:'例：地元祭り協賛、商工会議所連携、小学校出前講座' },
+    ],
+    tones: ['地域密着・街の情報','融資・創業支援','マネー豆知識','職員・窓口紹介','地域イベント・活動報告']
+  },
+  other: {
+    fields: [],
+    tones: ['お知らせ','商品・サービス紹介','日常・スタッフ','イベント','その他']
+  },
+  clinic: {
+    fields: [
+      { id:'dept', label:'診療科目', placeholder:'例：内科、皮膚科、歯科' },
+      { id:'feature', label:'特徴・強み', placeholder:'例：予防歯科に特化、小児対応、当日予約可' },
+    ],
+    tones: ['健康情報','治療・処置の紹介','スタッフ紹介','お知らせ・休診情報','予防・セルフケア']
+  }
+};
 
 function switchTab(tab) {
   ['list','edit','new'].forEach((t,i) => {
@@ -223,6 +349,68 @@ function switchTab(tab) {
     document.getElementById('tab-'+t).classList.toggle('active', t===tab);
   });
   if (tab==='list') loadIndex();
+}
+
+// ===== 業種別フィールド描画 =====
+function renderIndustryFields(prefix) {
+  const industry = document.getElementById(prefix+'-industry').value;
+  const tmpl = INDUSTRY_TEMPLATES[industry];
+  const fieldsEl = document.getElementById(prefix+'-industry-fields');
+  const tonesField = document.getElementById(prefix+'-tones-field');
+  const tonesCheck = document.getElementById(prefix+'-tones-check');
+
+  if (!tmpl || !fieldsEl) return;
+
+  // 業種別フィールドを描画
+  fieldsEl.innerHTML = tmpl.fields.map(f => `
+    <div class="field">
+      <label>${f.label}</label>
+      <input type="text" id="${prefix}-ind-${f.id}" placeholder="${f.placeholder}">
+    </div>`).join('');
+
+  // 投稿カテゴリのチェックボックス描画
+  if (tmpl.tones.length > 0) {
+    tonesCheck.innerHTML = tmpl.tones.map(t => `
+      <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:400;color:#333;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;padding:6px 10px;cursor:pointer;">
+        <input type="checkbox" value="${t}" checked style="accent-color:#850025;"> ${t}
+      </label>`).join('');
+    tonesField.style.display = 'block';
+  } else {
+    tonesField.style.display = 'none';
+  }
+}
+
+function getIndustryFieldValues(prefix) {
+  const industry = document.getElementById(prefix+'-industry').value;
+  const tmpl = INDUSTRY_TEMPLATES[industry];
+  if (!tmpl) return {};
+  const vals = {};
+  tmpl.fields.forEach(f => {
+    const el = document.getElementById(prefix+'-ind-'+f.id);
+    if (el) vals[f.id] = el.value.trim();
+  });
+  return vals;
+}
+
+function getSelectedTones(prefix) {
+  const checks = document.querySelectorAll('#'+prefix+'-tones-check input[type=checkbox]:checked');
+  return Array.from(checks).map(c => c.value);
+}
+
+function setIndustryFieldValues(prefix, extraData, tones) {
+  const industry = document.getElementById(prefix+'-industry').value;
+  const tmpl = INDUSTRY_TEMPLATES[industry];
+  if (!tmpl) return;
+  // フィールドに値をセット
+  tmpl.fields.forEach(f => {
+    const el = document.getElementById(prefix+'-ind-'+f.id);
+    if (el && extraData[f.id]) el.value = extraData[f.id];
+  });
+  // カテゴリのチェック状態を復元
+  if (tones && tones.length > 0) {
+    const checks = document.querySelectorAll('#'+prefix+'-tones-check input[type=checkbox]');
+    checks.forEach(cb => { cb.checked = tones.includes(cb.value); });
+  }
 }
 
 async function loadIndex() {
@@ -289,10 +477,15 @@ async function loadConfig() {
     const res = await fetch(PROXY+'/get-config?id='+id);
     const config = await res.json();
     if (config.error) { showStatus('search-status','見つかりませんでした','error'); return; }
+    const keyMap = {name:'n',industry:'i',website:'w',instagram:'ig',catchcopy:'c',features:'f',hashtags:'h',via:'via',notes:'note'};
     ['name','industry','website','instagram','catchcopy','features','hashtags','via','notes'].forEach(k => {
       const el = document.getElementById('edit-'+k);
-      if (el) el.value = config[{name:'n',industry:'i',website:'w',instagram:'ig',catchcopy:'c',features:'f',hashtags:'h',via:'via',notes:'note'}[k]] || '';
+      if (el) el.value = config[keyMap[k]] || '';
     });
+    // 業種別フィールドを描画してから値をセット
+    renderIndustryFields('edit');
+    if (config.extra) setIndustryFieldValues('edit', config.extra, config.tones);
+    else if (config.tones) setIndustryFieldValues('edit', {}, config.tones);
     currentEditId = id;
     document.getElementById('edit-result-url').textContent = `https://boston1215-hub.github.io/caption-tool/?id=${id}`;
     document.getElementById('edit-url-card').style.display = 'block';
@@ -306,11 +499,27 @@ async function saveConfig() {
   const btn = document.getElementById('save-btn');
   btn.disabled=true; btn.textContent='保存中...';
   try {
-    const config = { n:name, i:document.getElementById('edit-industry').value, w:document.getElementById('edit-website').value.trim(), ig:document.getElementById('edit-instagram').value.trim(), c:document.getElementById('edit-catchcopy').value.trim(), f:document.getElementById('edit-features').value.trim(), h:document.getElementById('edit-hashtags').value.trim(), via:document.getElementById('edit-via').value.trim(), note:document.getElementById('edit-notes').value.trim(), _id:currentEditId };
+    const extra = getIndustryFieldValues('edit');
+    const tones = getSelectedTones('edit');
+    const config = {
+      n:name, i:document.getElementById('edit-industry').value,
+      w:document.getElementById('edit-website').value.trim(),
+      ig:document.getElementById('edit-instagram').value.trim(),
+      c:document.getElementById('edit-catchcopy').value.trim(),
+      f:document.getElementById('edit-features').value.trim(),
+      h:document.getElementById('edit-hashtags').value.trim(),
+      via:document.getElementById('edit-via').value.trim(),
+      note:document.getElementById('edit-notes').value.trim(),
+      extra, tones, _id:currentEditId
+    };
     const res = await fetch(PROXY+'/save-config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(config) });
     const data = await res.json();
-    if (data.id) { currentEditId=data.id; document.getElementById('edit-result-url').textContent=`https://boston1215-hub.github.io/caption-tool/?id=${data.id}`; document.getElementById('edit-url-card').style.display='block'; showStatus('save-status','✓ 保存しました','success'); }
-    else showStatus('save-status','保存に失敗しました','error');
+    if (data.id) {
+      currentEditId=data.id;
+      document.getElementById('edit-result-url').textContent=`https://boston1215-hub.github.io/caption-tool/?id=${data.id}`;
+      document.getElementById('edit-url-card').style.display='block';
+      showStatus('save-status','✓ 保存しました','success');
+    } else showStatus('save-status','保存に失敗しました','error');
   } catch(e) { showStatus('save-status','エラー：'+e.message,'error'); }
   btn.disabled=false; btn.textContent='保存する';
 }
@@ -342,11 +551,26 @@ async function saveNew() {
   const btn = document.getElementById('new-save-btn');
   btn.disabled=true; btn.textContent='作成中...';
   try {
-    const config = { n:name, i:industry, w:document.getElementById('new-website').value.trim(), ig:document.getElementById('new-instagram').value.trim(), c:document.getElementById('new-catchcopy').value.trim(), f:document.getElementById('new-features').value.trim(), h:document.getElementById('new-hashtags').value.trim(), via:document.getElementById('new-via').value.trim(), note:document.getElementById('new-notes').value.trim() };
+    const extra = getIndustryFieldValues('new');
+    const tones = getSelectedTones('new');
+    const config = {
+      n:name, i:industry,
+      w:document.getElementById('new-website').value.trim(),
+      ig:document.getElementById('new-instagram').value.trim(),
+      c:document.getElementById('new-catchcopy').value.trim(),
+      f:document.getElementById('new-features').value.trim(),
+      h:document.getElementById('new-hashtags').value.trim(),
+      via:document.getElementById('new-via').value.trim(),
+      note:document.getElementById('new-notes').value.trim(),
+      extra, tones
+    };
     const res = await fetch(PROXY+'/save-config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(config) });
     const data = await res.json();
-    if (data.id) { document.getElementById('new-result-url').textContent=`https://boston1215-hub.github.io/caption-tool/?id=${data.id}`; document.getElementById('new-url-card').style.display='block'; showStatus('new-save-status','✓ 作成しました！','success'); }
-    else showStatus('new-save-status','作成に失敗しました','error');
+    if (data.id) {
+      document.getElementById('new-result-url').textContent=`https://boston1215-hub.github.io/caption-tool/?id=${data.id}`;
+      document.getElementById('new-url-card').style.display='block';
+      showStatus('new-save-status','✓ 作成しました！','success');
+    } else showStatus('new-save-status','作成に失敗しました','error');
   } catch(e) { showStatus('new-save-status','エラー：'+e.message,'error'); }
   btn.disabled=false; btn.textContent='作成してURLを発行する';
 }
@@ -354,6 +578,8 @@ async function saveNew() {
 function clearNew() {
   ['new-name','new-website','new-instagram','new-catchcopy','new-features','new-hashtags','new-via','new-notes'].forEach(id => document.getElementById(id).value='');
   document.getElementById('new-industry').value='';
+  document.getElementById('new-industry-fields').innerHTML='';
+  document.getElementById('new-tones-field').style.display='none';
   document.getElementById('new-url-card').style.display='none';
   document.getElementById('auto1').innerHTML=''; document.getElementById('auto2').innerHTML='';
   showStatus('new-save-status','',''); showStatus('fetch-status','','');
