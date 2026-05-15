@@ -440,6 +440,20 @@ function selectAccount(id) {
     customInputSection.style.display = 'none';
     document.getElementById('input-label').textContent = currentAccount.inputLabel;
     document.getElementById('main-input').placeholder = currentAccount.inputPlaceholder;
+    // sub-label・sub-inputも業種別に切り替え
+    const subSection = document.getElementById('sub-input') ? document.getElementById('sub-input').closest('.section') : null;
+    if (currentAccount.subLabel === null) {
+      if (subSection) subSection.style.display = 'none';
+    } else {
+      if (subSection) subSection.style.display = '';
+      const subLabelEl = document.getElementById('sub-label');
+      const subInputEl = document.getElementById('sub-input');
+      if (subLabelEl && currentAccount.subLabel) subLabelEl.textContent = currentAccount.subLabel;
+      if (subInputEl && currentAccount.subPlaceholder) subInputEl.placeholder = currentAccount.subPlaceholder;
+    }
+    // memoのplaceholderも切り替え
+    const memoEl = document.getElementById('memo');
+    if (memoEl && currentAccount.memoPlaceholder) memoEl.placeholder = currentAccount.memoPlaceholder;
   }
 
   // テイスト欄の表示切り替え
@@ -863,18 +877,18 @@ ${langRule}`
 
       // inputLabel・placeholderも業種別に切り替え
       const inputConfig = {
-        restaurant: { label:'料理名・メニュー', placeholder:'例：房総鯵のカルパッチョ' },
-        outdoor:    { label:'今日の釣果・活動内容', placeholder:'例：朝マヅメのメバリング、30cm超え！' },
-        beauty:     { label:'メニュー・スタイル名', placeholder:'例：ミルクティーベージュのハイライトカラー' },
-        realestate: { label:'物件名・エリア・特徴', placeholder:'例：稲毛海岸 新築2LDK 南向き角部屋' },
-        construction:{ label:'工事内容・現場', placeholder:'例：外構リフォーム完成、天然石のアプローチ' },
-        culture:    { label:'レッスン内容・作品', placeholder:'例：生徒さんの初めてのフラワーリース完成！' },
-        personal:   { label:'今日の出来事・テーマ', placeholder:'例：朝活ランニング、今日の気づき' },
-        shop:       { label:'商品名・入荷情報', placeholder:'例：デッドストックのリーバイス501、再入荷！' },
-        legal:      { label:'テーマ・投稿内容', placeholder:'例：相続で揉めないための3つのポイント' },
-        finance:    { label:'テーマ・地域トピック', placeholder:'例：地元の創業者を応援！融資相談会のご案内' },
-        clinic:     { label:'テーマ・診療内容', placeholder:'例：花粉症シーズン前に知っておきたいこと' },
-        other:      { label:'投稿内容・テーマ', placeholder:'例：新商品・お知らせ・イベント情報など' },
+        restaurant:   { label:'料理名・メニュー', placeholder:'例：房総鯵のカルパッチョ', subLabel:'食材・こだわり・産地', subPlaceholder:'例：千葉県産あじ、契約農家直送', memoPlaceholder:'例：ペアリングワインも紹介したい' },
+        outdoor:      { label:'今日の釣果・活動内容', placeholder:'例：朝マヅメのメバリング、30cm超え！', subLabel:'使用タックル・フィールド', subPlaceholder:'例：相模湾・ライトゲームロッド', memoPlaceholder:'例：天気・潮の様子なども添えて' },
+        beauty:       { label:'メニュー・スタイル名', placeholder:'例：ミルクティーベージュのハイライトカラー', subLabel:'施術のポイント・こだわり', subPlaceholder:'例：ダメージレスにこだわったブリーチ技法', memoPlaceholder:'例：お客様の雰囲気・ご要望など' },
+        realestate:   { label:'物件名・エリア・特徴', placeholder:'例：稲毛海岸 新築2LDK 南向き角部屋', subLabel:'間取り・価格・アクセス', subPlaceholder:'例：2LDK・3,480万円・駅徒歩8分', memoPlaceholder:'例：おすすめポイントや周辺環境など' },
+        construction: { label:'工事内容・現場', placeholder:'例：外構リフォーム完成、天然石のアプローチ', subLabel:'素材・工法・こだわり', subPlaceholder:'例：自然石と植栽を組み合わせたデザイン', memoPlaceholder:'例：施工前の状況や施主様の感想など' },
+        culture:      { label:'レッスン内容・作品', placeholder:'例：生徒さんの初めてのフラワーリース完成！', subLabel:'使用素材・技法', subPlaceholder:'例：秋の野花を使ったナチュラルスタイル', memoPlaceholder:'例：生徒さんのエピソードや感想など' },
+        personal:     { label:'今日の出来事・テーマ', placeholder:'例：朝活ランニング、今日の気づき', subLabel:'場所・状況', subPlaceholder:'例：代々木公園・早朝5時', memoPlaceholder:'例：感じたこと・伝えたいことなど' },
+        shop:         { label:'商品名・入荷情報', placeholder:'例：デッドストックのリーバイス501、再入荷！', subLabel:'素材・サイズ・価格', subPlaceholder:'例：コットン100%・¥12,800', memoPlaceholder:'例：おすすめの合わせ方や数量限定など' },
+        legal:        { label:'テーマ・投稿内容', placeholder:'例：相続で揉めないための3つのポイント', subLabel:'対象・具体的な内容', subPlaceholder:'例：遺言書の書き方・家族信託との違い', memoPlaceholder:'例：よくある相談事例・気をつけたいポイントなど' },
+        finance:      { label:'テーマ・地域トピック', placeholder:'例：地元の創業者を応援！融資相談会のご案内', subLabel:'地域名・詳細情報', subPlaceholder:'例：千葉市中央区・3月15日開催', memoPlaceholder:'例：参加者の声や地域のエピソードなど' },
+        clinic:       { label:'テーマ・診療内容', placeholder:'例：花粉症シーズン前に知っておきたいこと', subLabel:'詳細・対処法', subPlaceholder:'例：早めの抗アレルギー薬が効果的', memoPlaceholder:'例：患者さんからよくある質問など' },
+        other:        { label:'投稿内容・テーマ', placeholder:'例：新商品・お知らせ・イベント情報など', subLabel:'詳細・補足情報', subPlaceholder:'例：日時・価格・場所など', memoPlaceholder:'例：補足したいことがあれば' },
       };
       const iconf = inputConfig[config.i] || inputConfig['other'];
 
@@ -888,6 +902,9 @@ ${langRule}`
         instaUrl: config.ig || 'https://www.instagram.com/',
         inputLabel: iconf.label,
         inputPlaceholder: iconf.placeholder,
+        subLabel: iconf.subLabel,
+        subPlaceholder: iconf.subPlaceholder,
+        memoPlaceholder: iconf.memoPlaceholder,
         tones: toneList,
         systemPrompt: buildSystemPrompt(config, langPrompt[config.l]),
         tonePrompts: {
