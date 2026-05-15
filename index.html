@@ -121,7 +121,8 @@
       <div class="upload-area">
         <input type="file" accept="image/*" id="photo-input" onchange="handlePhoto(this)">
         <div class="upload-icon">📷</div>
-        <div class="upload-text" id="upload-text">タップして写真を選択</div>
+        <div class="upload-text" id="upload-text">インスタに上げる予定の写真を選択（5MB以下）</div>
+        <div style="font-size:11px;color:#bbb;margin-top:6px;line-height:1.6;">写真があると、参考にしたキャプションが生成されます。<br>なくても自動生成されるので安心してください。</div>
       </div>
       <img id="preview-img" alt="プレビュー">
     </div>
@@ -502,7 +503,7 @@ function handlePhoto(input) {
     const img = document.getElementById('preview-img');
     img.src = e.target.result;
     img.style.display = 'block';
-    document.getElementById('upload-text').textContent = '写真を変更する';
+    document.getElementById('upload-text').textContent = '写真を変更する（5MB以下）';
   };
   reader.readAsDataURL(file);
 }
