@@ -334,33 +334,29 @@
   </div>
 
   <div class="card">
-    <div class="card-title">ターゲット &amp; トーン</div>
+    <div class="card-title">物件用途 &amp; ターゲット &amp; トーン</div>
+
+    <div class="field">
+      <label>物件用途</label>
+      <div style="display:flex; gap:8px; margin-bottom:4px;">
+        <button type="button" class="toggle-btn active" id="use-btn-residential" onclick="switchUse('residential')">🏠 居住用</button>
+        <button type="button" class="toggle-btn" id="use-btn-commercial" onclick="switchUse('commercial')">🏢 事業用</button>
+      </div>
+    </div>
+
     <div class="row2">
       <div class="field">
         <label>ターゲット</label>
-        <select id="target">
-          <option value="単身者（20〜30代）">単身者（20〜30代）</option>
-          <option value="カップル・新婚">カップル・新婚</option>
-          <option value="ファミリー">ファミリー</option>
-          <option value="法人・転勤者">法人・転勤者</option>
-          <option value="シニア・定年後">シニア・定年後</option>
-          <option value="学生">学生</option>
-        </select>
+        <select id="target"></select>
       </div>
       <div class="field">
         <label>トーン</label>
-        <select id="tone">
-          <option value="おしゃれ・スタイリッシュ">おしゃれ・スタイリッシュ</option>
-          <option value="温かみ・アットホーム">温かみ・アットホーム</option>
-          <option value="高級感・上質">高級感・上質</option>
-          <option value="コスパ重視・実用的">コスパ重視・実用的</option>
-          <option value="ナチュラル・海辺の暮らし">ナチュラル・海辺の暮らし</option>
-        </select>
+        <select id="tone"></select>
       </div>
     </div>
     <div class="field">
       <label>補足・セールスポイント（自由入力）</label>
-      <textarea id="extra" placeholder="例：稲毛の海まで自転車5分、近隣に大型スーパー2軒、小中学校も近くファミリーに最適など"></textarea>
+      <textarea id="extra" placeholder="例：稲毛の海まで自転車5分、近隣に大型スーパー2軒、1階路面店・視認性良好など"></textarea>
     </div>
   </div>
 
@@ -380,6 +376,37 @@
     document.querySelectorAll('.access-panel').forEach(p => p.classList.remove('show'));
     document.getElementById('panel-' + type).classList.add('show');
   }
+
+  let currentUse = 'residential';
+
+  const USE_OPTIONS = {
+    residential: {
+      targets: ['単身者（20〜30代）','カップル・新婚','ファミリー','法人・転勤者','シニア・定年後','学生'],
+      tones: ['おしゃれ・スタイリッシュ','温かみ・アットホーム','高級感・上質','コスパ重視・実用的','ナチュラル・海辺の暮らし'],
+      promptHint: '居住用物件として、入居者の生活イメージが膨らむような紹介文を作成してください。'
+    },
+    commercial: {
+      targets: ['オフィス利用','飲食店舗','一般店舗（物販・サービス）','クリニック・医療','その他事業用'],
+      tones: ['ビジネスライク・信頼感','活気・にぎわい感','高級感・上質','コスパ重視・実用的','シンプル・情報重視'],
+      promptHint: '事業用物件として、経営者・テナント担当者に向けた実用的な紹介文を作成してください。物件スペック・立地の事業的メリットを明確に伝えてください。'
+    }
+  };
+
+  function switchUse(type) {
+    currentUse = type;
+    document.getElementById('use-btn-residential').classList.toggle('active', type === 'residential');
+    document.getElementById('use-btn-commercial').classList.toggle('active', type === 'commercial');
+    updateUseSelects();
+  }
+
+  function updateUseSelects() {
+    const opts = USE_OPTIONS[currentUse];
+    document.getElementById('target').innerHTML = opts.targets.map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('tone').innerHTML = opts.tones.map(t => `<option value="${t}">${t}</option>`).join('');
+  }
+
+  // 初期化
+  updateUseSelects();
 
   const LINES_CHIBA = {
     'JR': ['JR総武線','JR京葉線','JR外房線','JR内房線','JR成田線','JR常磐線'],
@@ -526,6 +553,7 @@
 補足：${extra || 'なし'}`;
 
     const isChiba = currentArea === 'chiba';
+    const useHint = USE_OPTIONS[currentUse].promptHint;
     const areaDesc = isChiba ? '千葉県エリアに詳しい' : '首都圏エリアに詳しい';
     const areaHint = isChiba
       ? '千葉エリアならではの生活利便性（買い物環境・自然・交通アクセス）も積極的に盛り込んでください。'
@@ -534,7 +562,7 @@
     const portalHint = isChiba ? '千葉エリアの生活環境も記載' : 'エリアの生活環境も記載';
     const flyerHint = isChiba ? '千葉らしさを出す' : 'エリアの魅力を出す';
 
-    const prompt = `あなたは${areaDesc}不動産の優秀なコピーライターです。以下の物件情報をもとに、3種類の紹介文を作成してください。${areaHint}車でのアクセス情報（IC）がある場合は、車生活の利便性も必ずアピールしてください。
+    const prompt = `あなたは${areaDesc}不動産の優秀なコピーライターです。以下の物件情報をもとに、3種類の紹介文を作成してください。${useHint}${areaHint}車でのアクセス情報（IC）がある場合は、車生活の利便性も必ずアピールしてください。
 
 【厳守事項】
 - 築年数は入力された情報をそのまま正確に使用すること。「新築」「築浅」などの表現は、実際に新築・築浅（概ね築3年以内）の場合のみ使用すること。
