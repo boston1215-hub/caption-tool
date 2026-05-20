@@ -571,34 +571,61 @@ async function generateCaption() {
     text: `内容：${mainInput}${memo ? '\n補足：' + memo : ''}\nカテゴリ：${selectedTone}\nテイスト：${selectedStyle}`
   });
 
-  try {
-    const res = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userContent }]
-      })
-    });
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000;
+  const requestBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1000,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userContent }]
+  });
 
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error?.message || `HTTPエラー ${res.status}`);
+  let lastError = '';
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 1) {
+        btn.textContent = `再試行中… (${attempt}/${MAX_RETRIES})`;
+        await new Promise(r => setTimeout(r, RETRY_DELAY));
+      }
+
+      const res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: requestBody
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const errType = data.error?.type || '';
+        if (errType === 'overload_error' && attempt < MAX_RETRIES) {
+          lastError = 'サーバーが混み合っています。少し待って再試行します…';
+          errEl.textContent = lastError;
+          continue;
+        }
+        throw new Error(
+          errType === 'overload_error'
+            ? 'サーバーが混み合っています。しばらくしてから再度お試しください。'
+            : data.error?.message || `エラーが発生しました（${res.status}）`
+        );
+      }
+
+      const text = (data.content || []).map(b => b.text || '').join('');
+      const jsonMatch = text.match(/\{[\s\S]*"captions"[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('生成結果の取得に失敗しました。再度お試しください。');
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      variations = parsed.captions || [];
+      showVariation(0);
+      document.getElementById('result-area').style.display = 'block';
+      document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+      errEl.textContent = '';
+      break;
+
+    } catch(e) {
+      lastError = e.message;
+      if (attempt === MAX_RETRIES) errEl.textContent = lastError;
     }
-
-    const data = await res.json();
-    const text = data.content.map(b => b.text || '').join('');
-    const jsonMatch = text.match(/\{[\s\S]*"captions"[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('生成失敗。再度お試しください。');
-    const parsed = JSON.parse(jsonMatch[0]);
-    variations = parsed.captions || [];
-    showVariation(0);
-    document.getElementById('result-area').style.display = 'block';
-    document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
-  } catch(e) {
-    errEl.textContent = 'エラー：' + e.message;
   }
 
   btn.disabled = false;
