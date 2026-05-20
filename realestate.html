@@ -328,7 +328,7 @@
       </div>
       <div class="field">
         <label>エリア区分</label>
-        <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
           <button type="button" class="toggle-btn active" id="area-btn-chiba" onclick="switchArea('chiba')">🏙 千葉エリア</button>
           <button type="button" class="toggle-btn" id="area-btn-other" onclick="switchArea('other')">🗼 東京・その他</button>
         </div>
@@ -350,7 +350,8 @@
           </select>
         </div>
         <div id="area-other" style="display:none;">
-          <input type="text" id="prop-area-other" placeholder="例：東京都渋谷区、神奈川県横浜市西区">
+          <input type="text" id="prop-area-other" placeholder="例：東京都渋谷区、神奈川県横浜市、埼玉県さいたま市など">
+          <div class="hint">都道府県・市区町村を自由に入力してください</div>
         </div>
       </div>
     </div>
@@ -404,9 +405,10 @@
       <div class="station-row row3">
         <div class="field">
           <label>路線①</label>
-          <select id="train-line1">
+          <select id="train-line1" onchange="toggleCustomLine('train-line1','train-line1-custom')">
             <option value="">選択してください</option>
           </select>
+          <input type="text" id="train-line1-custom" placeholder="路線名を入力" style="display:none;margin-top:6px;">
         </div>
         <div class="field">
           <label>最寄り駅①</label>
@@ -420,9 +422,10 @@
       <div class="station-row row3" style="margin-top: 8px;">
         <div class="field">
           <label>路線②（任意）</label>
-          <select id="train-line2">
+          <select id="train-line2" onchange="toggleCustomLine('train-line2','train-line2-custom')">
             <option value="">なし</option>
           </select>
+          <input type="text" id="train-line2-custom" placeholder="路線名を入力" style="display:none;margin-top:6px;">
         </div>
         <div class="field">
           <label>最寄り駅②（任意）</label>
@@ -433,7 +436,7 @@
           <input type="text" id="train-walk2" placeholder="例：12">
         </div>
       </div>
-      <div class="hint" style="margin-top: 6px;">駅名は自由に入力できます。路線がリストにない場合は②の路線欄を空白にして駅名のみ入力してください</div>
+      <div class="hint" style="margin-top: 6px;">路線がリストにない場合は「その他（直接入力）」を選択してください。駅と路線名が合わない場合はAIが自動補正します。</div>
     </div>
     <div class="access-panel" id="panel-bus">
       <div class="row2">
@@ -680,7 +683,28 @@
       items.forEach(l => { html += `<option>${l}</option>`; });
       html += '</optgroup>';
     }
+    html += '<option value="__custom__">その他（直接入力）</option>';
     return html;
+  }
+
+  function toggleCustomLine(selectId, inputId) {
+    const sel = document.getElementById(selectId);
+    const inp = document.getElementById(inputId);
+    if (sel.value === '__custom__') {
+      inp.style.display = 'block';
+      inp.focus();
+    } else {
+      inp.style.display = 'none';
+      inp.value = '';
+    }
+  }
+
+  function getLineValue(selectId, inputId) {
+    const sel = document.getElementById(selectId);
+    if (sel.value === '__custom__') {
+      return document.getElementById(inputId).value.trim();
+    }
+    return sel.value.trim();
   }
 
   function updateLineSelects() {
@@ -730,10 +754,10 @@
 
   function getAccessText() {
     if (currentAccess === 'train') {
-      const line1 = document.getElementById('train-line1').value.trim();
+      const line1 = getLineValue('train-line1', 'train-line1-custom');
       const station1 = document.getElementById('train-station1').value.trim();
       const walk1 = document.getElementById('train-walk1').value.trim();
-      const line2 = document.getElementById('train-line2').value.trim();
+      const line2 = getLineValue('train-line2', 'train-line2-custom');
       const station2 = document.getElementById('train-station2').value.trim();
       const walk2 = document.getElementById('train-walk2').value.trim();
       if (!station1 && !line1) return '未設定';
@@ -822,6 +846,7 @@
 【厳守事項】
 - 築年数は入力された情報をそのまま正確に使用すること。「新築」「築浅」などの表現は、実際に新築・築浅（概ね築3年以内）の場合のみ使用すること。
 - 入力されていない情報は勝手に作らないこと。
+- 路線名と駅名の組み合わせが正しくない場合は、駅名を優先して正しい路線名に補正して使用すること。
 - 賃料・間取り・面積などの数字は入力値をそのまま使用すること。
 
 物件情報：
