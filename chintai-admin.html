@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>トライアル管理画面 | asChronos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      background: #f5f6f8; color: #1a1a1a; line-height: 1.7;
+    }
+    .header {
+      background: #0f4c81; color: #fff;
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header p { font-size: 12px; opacity: 0.7; }
+    .logout-btn {
+      font-size: 12px; padding: 4px 12px; border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.4); background: none;
+      color: #fff; cursor: pointer;
+    }
+    .main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    .card {
+      background: #fff; border-radius: 12px; border: 1px solid #e4e6ea;
+      padding: 1.25rem 1.5rem; margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 11px; font-weight: 600; color: #888;
+      letter-spacing: 0.08em; margin-bottom: 1rem;
+      padding-bottom: 8px; border-bottom: 1px solid #f0f0f0;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; }
+    .field input, .field select {
+      width: 100%; padding: 8px 12px; border: 1px solid #ddd;
+      border-radius: 8px; font-size: 14px; font-family: inherit;
+    }
+    .field input:focus { outline: none; border-color: #0f4c81; }
+    .period-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .period-btn {
+      padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px;
+      background: #fff; color: #666; font-size: 13px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .period-btn.active { background: #e8f0fb; color: #0f4c81; border-color: #7aaad6; font-weight: 600; }
+    .btn {
+      padding: 10px 20px; border-radius: 8px; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: #0f4c81; color: #fff; }
+    .btn-primary:hover { background: #0a3560; }
+    .btn-danger { background: #fff0f0; color: #cc3333; border: 1px solid #ffcccc; }
+    .btn-danger:hover { background: #ffe0e0; }
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+
+    /* 発行結果 */
+    .result-box {
+      background: #e8f5e9; border: 1px solid #a5d6a7;
+      border-radius: 10px; padding: 1.25rem; margin-top: 1rem; display: none;
+    }
+    .result-box h3 { font-size: 14px; color: #2e7d32; margin-bottom: 10px; }
+    .result-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .result-label { font-size: 12px; color: #555; width: 100px; flex-shrink: 0; }
+    .result-value { font-size: 14px; font-weight: 600; font-family: monospace; }
+    .copy-all-btn {
+      width: 100%; margin-top: 10px; padding: 8px;
+      background: #2e7d32; color: #fff; border: none;
+      border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit;
+    }
+
+    /* ユーザー一覧 */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 1px solid #eee; }
+    th { text-align: left; padding: 8px 0; color: #888; font-weight: 600; font-size: 12px; }
+    td { padding: 10px 0; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+    .status-badge {
+      display: inline-block; padding: 2px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+    }
+    .status-active { background: #e8f5e9; color: #2e7d32; }
+    .status-expired { background: #fff0f0; color: #cc3333; }
+    .status-soon { background: #fff8e1; color: #f57c00; }
+    .empty-msg { text-align: center; padding: 2rem; color: #aaa; font-size: 14px; }
+
+    /* ログイン画面 */
+    .login-overlay {
+      position: fixed; inset: 0; background: #0f4c81;
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .login-box {
+      background: #fff; border-radius: 16px; padding: 2.5rem 2rem;
+      width: 90%; max-width: 340px; text-align: center;
+    }
+    .login-box h2 { font-size: 18px; font-weight: 700; color: #0f4c81; margin-bottom: 4px; }
+    .login-box p { font-size: 12px; color: #888; margin-bottom: 1.5rem; }
+    .login-input {
+      width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+      border-radius: 8px; font-size: 15px; font-family: inherit; margin-bottom: 10px;
+    }
+    .login-submit {
+      width: 100%; padding: 12px; background: #0f4c81; color: #fff;
+      border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .login-error { color: #cc3333; font-size: 13px; margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      .form-row, .form-row3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ログイン画面 -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <h2>管理画面ログイン</h2>
+    <p>asChronos スタッフ専用</p>
+    <input type="password" class="login-input" id="admin-pass-input" placeholder="管理者パスワード">
+    <button class="login-submit" onclick="adminLogin()">ログイン</button>
+    <div class="login-error" id="admin-login-error"></div>
+  </div>
+</div>
+
+<div class="header">
+  <div>
+    <h1>🔑 トライアルID管理画面</h1>
+    <p>賃貸キャプションツール サンプル版</p>
+  </div>
+  <button class="logout-btn" onclick="logout()">ログアウト</button>
+</div>
+
+<div class="main">
+
+  <!-- ID発行フォーム -->
+  <div class="card">
+    <div class="card-title">新規トライアルID発行</div>
+    <div class="form-row">
+      <div class="field">
+        <label>会社名 <span style="color:#cc3333">*</span></label>
+        <input type="text" id="new-company" placeholder="例：山田不動産株式会社">
+      </div>
+      <div class="field">
+        <label>担当者名</label>
+        <input type="text" id="new-name" placeholder="例：山田 太郎">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>ID（自動生成）</label>
+        <input type="text" id="new-id" placeholder="例：yamada01">
+      </div>
+      <div class="field">
+        <label>パスワード（自動生成）</label>
+        <input type="text" id="new-pass" placeholder="例：Yama2026">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>利用期間</label>
+      <div class="period-btns" style="margin-top:6px;">
+        <button class="period-btn active" onclick="setPeriod(7, this)">1週間</button>
+        <button class="period-btn" onclick="setPeriod(14, this)">2週間</button>
+        <button class="period-btn" onclick="setPeriod(30, this)">1ヶ月</button>
+      </div>
+      <input type="date" id="new-expires" style="margin-top:8px; max-width:200px; padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit;">
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="btn btn-primary" onclick="generateAndSave()">✦ IDを発行する</button>
+      <button class="btn" style="background:#f0f0f0;color:#555;" onclick="generateIds()">🔄 ID・パスワードを再生成</button>
+    </div>
+
+    <div class="result-box" id="result-box">
+      <h3>✅ 発行完了！以下の情報をお客様にお伝えください</h3>
+      <div class="result-item">
+        <span class="result-label">ツールURL</span>
+        <span class="result-value" id="res-url">https://tools.aschronos.co.jp/chintaicaption-sample.html</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">ID</span>
+        <span class="result-value" id="res-id"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">パスワード</span>
+        <span class="result-value" id="res-pass"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">利用期限</span>
+        <span class="result-value" id="res-expires"></span>
+      </div>
+      <button class="copy-all-btn" onclick="copyAll()">📋 まとめてコピー（メール用）</button>
+    </div>
+  </div>
+
+  <!-- ユーザー一覧 -->
+  <div class="card">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>発行済みID一覧</span>
+      <button class="btn btn-sm" style="background:#f0f0f0;color:#555;border:none;" onclick="loadUsers()">🔄 更新</button>
+    </div>
+    <div id="user-table-wrap">
+      <div class="empty-msg">読み込み中...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const WORKER = 'https://realestate-proxy.boston1215.workers.dev';
+const ADMIN_KEY = 'chintai_admin';
+let adminPass = '';
+
+// 管理者ログイン
+async function adminLogin() {
+  const pass = document.getElementById('admin-pass-input').value.trim();
+  const errEl = document.getElementById('admin-login-error');
+  if (!pass) { errEl.textContent = 'パスワードを入力してください'; return; }
+
+  try {
+    const res = await fetch(`${WORKER}/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pass })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      adminPass = pass;
+      sessionStorage.setItem(ADMIN_KEY, pass);
+      document.getElementById('login-overlay').style.display = 'none';
+      init();
+    } else {
+      errEl.textContent = 'パスワードが正しくありません';
+    }
+  } catch(e) {
+    errEl.textContent = '通信エラーが発生しました';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(ADMIN_KEY);
+  location.reload();
+}
+
+// 初期化
+function init() {
+  generateIds();
+  setPeriod(7, document.querySelector('.period-btn.active'));
+  loadUsers();
+}
+
+// ID・パスワード自動生成
+function generateIds() {
+  const company = document.getElementById('new-company').value.trim();
+  const prefix = company ? company.replace(/[^a-zA-Z0-9\u3040-\u9fff]/g, '').substring(0, 4) : 'user';
+  const num = Math.floor(Math.random() * 90 + 10);
+  const id = (prefix + num).toLowerCase().replace(/[^\w]/g, 'x');
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let pass = '';
+  for (let i = 0; i < 8; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('new-id').value = id;
+  document.getElementById('new-pass').value = pass;
+}
+
+// 期間設定
+function setPeriod(days, btn) {
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  document.getElementById('new-expires').value = d.toISOString().split('T')[0];
+}
+
+// ID発行
+async function generateAndSave() {
+  const company = document.getElementById('new-company').value.trim();
+  const name = document.getElementById('new-name').value.trim();
+  const id = document.getElementById('new-id').value.trim();
+  const pass = document.getElementById('new-pass').value.trim();
+  const expires = document.getElementById('new-expires').value;
+
+  if (!company) { alert('会社名を入力してください'); return; }
+  if (!id || !pass || !expires) { alert('ID・パスワード・期限を入力してください'); return; }
+
+  try {
+    const res = await fetch(`${WORKER}/admin/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminPass, id, pass, company, name, expires })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      // 結果表示
+      document.getElementById('res-id').textContent = id;
+      document.getElementById('res-pass').textContent = pass;
+      document.getElementById('res-expires').textContent = expires + ' まで';
+      document.getElementById('result-box').style.display = 'block';
+      loadUsers();
+    } else {
+      alert('発行に失敗しました');
+    }
+  } catch(e) {
+    alert('通信エラーが発生しました');
+  }
+}
+
+// まとめてコピー
+function copyAll() {
+  const url = 'https://tools.aschronos.co.jp/chintaicaption-sample.html';
+  const id = document.getElementById('res-id').textContent;
+  const pass = document.getElementById('res-pass').textContent;
+  const expires = document.getElementById('res-expires').textContent;
+  const text = `【賃貸キャプションツール トライアルのご案内】\n\nツールURL：${url}\nID：${id}\nパスワード：${pass}\n利用期限：${expires}\n\n※期限内にぜひお試しください。\nご不明な点はお気軽にご連絡ください。\n\nasChronos, Inc.\nh.kunimoto@aschronos.co.jp`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-all-btn');
+    btn.textContent = 'コピーしました！';
+    setTimeout(() => { btn.textContent = '📋 まとめてコピー（メール用）'; }, 2000);
+  });
+}
+
+// ユーザー一覧読み込み
+async function loadUsers() {
+  const wrap = document.getElementById('user-table-wrap');
+  try {
+    const res = await fetch(`${WORKER}/admin/list`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminPass })
+    });
+    const data = await res.json();
+    if (!data.ok || !data.users.length) {
+      wrap.innerHTML = '<div class="empty-msg">発行済みIDはありません</div>';
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const rows = data.users.map(u => {
+      const daysLeft = Math.ceil((new Date(u.expires) - new Date()) / 86400000);
+      let badge = '';
+      if (u.expired) {
+        badge = '<span class="status-badge status-expired">期限切れ</span>';
+      } else if (daysLeft <= 3) {
+        badge = `<span class="status-badge status-soon">あと${daysLeft}日</span>`;
+      } else {
+        badge = `<span class="status-badge status-active">有効（あと${daysLeft}日）</span>`;
+      }
+      return `
+        <tr>
+          <td style="font-weight:600;">${u.company}</td>
+          <td>${u.name || '-'}</td>
+          <td style="font-family:monospace;">${u.id}</td>
+          <td>${u.expires}</td>
+          <td>${badge}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}', '${u.company}')">削除</button>
+          </td>
+        </tr>`;
+    }).join('');
+
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>会社名</th><th>担当者</th><th>ID</th><th>期限</th><th>状態</th><th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } catch(e) {
+    wrap.innerHTML = '<div class="empty-msg">読み込みに失敗しました</div>';
+  }
+}
+
+// ユーザー削除
+async function deleteUser(id, company) {
+  if (!confirm(`「${company}」(${id}) を削除しますか？`)) return;
+  try {
+    const res = await fetch(`${WORKER}/admin/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminPass, id })
+    });
+    const data = await res.json();
+    if (data.ok) loadUsers();
+    else alert('削除に失敗しました');
+  } catch(e) {
+    alert('通信エラーが発生しました');
+  }
+}
+
+// 会社名入力時にIDを自動更新
+document.getElementById('new-company').addEventListener('blur', generateIds);
+
+// 起動時
+const savedPass = sessionStorage.getItem(ADMIN_KEY);
+if (savedPass) {
+  adminPass = savedPass;
+  document.getElementById('login-overlay').style.display = 'none';
+  init();
+} else {
+  document.getElementById('admin-pass-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminLogin();
+  });
+}
+</script>
+</body>
+</html>
