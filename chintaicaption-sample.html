@@ -633,7 +633,29 @@
       alert('物件名・賃料・間取りのいずれかを入力してください');
       return;
     }
-
+// ===== 使用回数チェック =====
+  const session = JSON.parse(sessionStorage.getItem('chintai_session') || 'null');
+  if (session && session.id) {
+    try {
+      const countRes = await fetch('https://realestate-proxy.boston1215.workers.dev/check-count', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: session.id })
+      });
+      const countData = await countRes.json();
+      if (countData.limitReached) {
+        document.getElementById('results').innerHTML = `
+          <div class="error-msg">
+            トライアルの利用上限（50回）に達しました。<br>
+            引き続きご利用をご希望の場合はお問い合わせください。<br>
+            <strong>h.kunimoto@aschronos.co.jp</strong>
+          </div>`;
+        return;
+      }
+    } catch(e) {
+      console.error('回数チェックエラー', e);
+    }
+  }
     const btn = document.getElementById('gen-btn');
     btn.disabled = true;
     btn.textContent = '生成中...';
